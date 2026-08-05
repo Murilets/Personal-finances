@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Api/">
+    <Project Path="Api/FinChat.Api.csproj" />
+  </Folder>
+  <Folder Name="/Application/">
+    <Project Path="Application/FinChat.Application.csproj" />
+  </Folder>
+  <Folder Name="/Domain/">
+    <Project Path="Domain/FinChat.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Infrastructure/">
+    <Project Path="Infrastructure/FinChat.Infrastructure.csproj" />
+  </Folder>
+</Solution>

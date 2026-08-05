@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: finchat-db
+    environment:
+      POSTGRES_DB: finchat
+      POSTGRES_USER: finchat
+      POSTGRES_PASSWORD: finchat
+    ports:
+      - "5432:5432"
+    volumes:
+      - finchat_data:/var/lib/postgresql/data
+
+volumes:
+  finchat_data:

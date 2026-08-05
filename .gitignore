@@ -1,0 +1,13 @@
+# .NET
+src/**/bin/
+src/**/obj/
+*.user
+.vs/
+
+# Ambiente
+.env
+appsettings.Development.json
+
+# SO
+.DS_Store
+Thumbs.db
