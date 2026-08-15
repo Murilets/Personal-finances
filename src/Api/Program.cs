@@ -1,12 +1,19 @@
+using FinChat.Infrastructure;
+using FinChat.Infrastructure.Persistence;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// Adicionar a camada de Infraestrutura (AppDbContext, EF Core com PostgreSQL, Repositórios)
+builder.Services.AddInfrastructure(builder.Configuration);
+
 var app = builder.Build();
+
+// Executar migrations e seed do banco de dados na inicialização
+await DbInitializer.InitializeAsync(app.Services);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
