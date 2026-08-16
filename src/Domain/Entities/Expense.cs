@@ -7,6 +7,7 @@ public class Expense
     public decimal Amount { get; private set; }
     public DateTime Date { get; private set; }
     public Guid CategoryId { get; private set; }
+    public Category Category { get; private set; } = null!;
     public string? Note { get; private set; }
 
     private Expense()
