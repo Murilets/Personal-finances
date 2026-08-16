@@ -36,4 +36,15 @@ public class Expense
 
         Amount = newAmount;
     }
+
+    public void Update(decimal amount, DateTime date, Guid categoryId, string? note = null)
+    {
+        if (amount <= 0)
+            throw new DomainException("Amount must be greater than zero");
+
+        Amount = amount;
+        Date = date;
+        CategoryId = categoryId;
+        Note = note;
+    }
 }

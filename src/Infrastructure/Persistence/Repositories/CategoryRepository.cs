@@ -1,6 +1,7 @@
 namespace FinChat.Infrastructure.Persistence.Repositories;
 
 using FinChat.Domain.Entities;
+using FinChat.Domain.Exceptions;
 using FinChat.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,6 +49,14 @@ public class CategoryRepository : ICategoryRepository
     public async Task DeleteAsync(Category category, CancellationToken cancellationToken = default)
     {
         _context.Categories.Remove(category);
-        await _context.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException)
+        {
+            throw new DomainException("Não é possível excluir uma categoria que possui despesas vinculadas.");
+        }
     }
 }
