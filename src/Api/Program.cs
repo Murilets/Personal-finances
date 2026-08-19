@@ -1,3 +1,4 @@
+using FinChat.Api.Middleware;
 using FinChat.Application;
 using FinChat.Infrastructure;
 using FinChat.Infrastructure.Persistence;
@@ -26,6 +27,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<DomainExceptionMiddleware>();
 
 app.UseAuthorization();
 

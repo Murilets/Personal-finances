@@ -24,7 +24,7 @@ public class CategoryService : ICategoryService
     public async Task<CategoryResponse> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         var category = await _repository.GetByIdAsync(id, ct)
-            ?? throw new DomainException($"Categoria {id} nao encontrada");
+            ?? throw new DomainException($"Categoria {id} nao encontrada", 404);
         return MapToResponse(category);
     }
 
@@ -41,7 +41,7 @@ public class CategoryService : ICategoryService
     public async Task<CategoryResponse> UpdateAsync(Guid id, UpdateCategoryRequest request, CancellationToken ct = default)
     {
         var category = await _repository.GetByIdAsync(id, ct)
-            ?? throw new DomainException($"Categoria {id} nao encontrada");
+            ?? throw new DomainException($"Categoria {id} nao encontrada", 404);
 
         if (await _repository.ExistsByNameAsync(request.Name, ct) && category.Name != request.Name)
             throw new DomainException($"Já existe uma categoria com o nome '{request.Name}'.");
@@ -55,7 +55,7 @@ public class CategoryService : ICategoryService
     public async Task DeleteAsync(Guid id, CancellationToken ct = default)
     {
         var category = await _repository.GetByIdAsync(id, ct)
-            ?? throw new DomainException($"Categoria {id} nao encontrada");
+            ?? throw new DomainException($"Categoria {id} nao encontrada", 404);
 
         await _repository.DeleteAsync(category, ct);
     }

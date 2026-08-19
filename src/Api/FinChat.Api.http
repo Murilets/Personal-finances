@@ -1,6 +1,37 @@
 @FinChat.Api_HostAddress = http://localhost:5132
 
-GET {{FinChat.Api_HostAddress}}/weatherforecast/
+### Categories
+
+GET {{FinChat.Api_HostAddress}}/api/categories
 Accept: application/json
+
+###
+
+POST {{FinChat.Api_HostAddress}}/api/categories
+Content-Type: application/json
+
+{
+  "name": "Alimentação",
+  "description": "Gastos com comida"
+}
+
+###
+
+### Expenses
+
+GET {{FinChat.Api_HostAddress}}/api/expenses
+Accept: application/json
+
+###
+
+POST {{FinChat.Api_HostAddress}}/api/expenses
+Content-Type: application/json
+
+{
+  "amount": 89.90,
+  "date": "2026-08-16T12:00:00",
+  "categoryId": "00000000-0000-0000-0000-000000000000",
+  "note": "Mercado"
+}
 
 ###
