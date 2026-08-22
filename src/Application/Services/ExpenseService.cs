@@ -18,16 +18,16 @@ public class ExpenseService : IExpenseService
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<List<ExpenseResponse>> GetAllAsync(CancellationToken ct = default)
+    public async Task<List<ExpenseResponse>> GetAllAsync(DateTime? startDate = null, DateTime? endDate = null, Guid? categoryId = null, CancellationToken ct = default)
     {
-        var expenses = await _expenseRepository.GetAllAsync(ct);
+        var expenses = await _expenseRepository.GetAllAsync(startDate, endDate, categoryId, ct);
         return expenses.Select(MapToResponse).ToList();
     }
 
     public async Task<ExpenseResponse> GetByIdAsync(Guid id, CancellationToken ct = default)
     {
         var expense = await _expenseRepository.GetByIdAsync(id, ct)
-            ?? throw new DomainException($"Despesa {id} nao encontrada");
+            ?? throw new DomainException($"Despesa {id} nao encontrada", 404);
 
         return MapToResponse(expense);
     }
@@ -53,7 +53,7 @@ public class ExpenseService : IExpenseService
     public async Task<ExpenseResponse> UpdateAsync(Guid id, UpdateExpenseRequest request, CancellationToken ct = default)
     {
         var expense = await _expenseRepository.GetByIdAsync(id, ct)
-            ?? throw new DomainException($"Despesa {id} nao encontrada");
+            ?? throw new DomainException($"Despesa {id} nao encontrada", 404);
 
         var category = await _categoryRepository.GetByIdAsync(request.CategoryId, ct)
             ?? throw new DomainException($"A categoria {request.CategoryId} nao existe");
@@ -68,7 +68,7 @@ public class ExpenseService : IExpenseService
     public async Task DeleteAsync(Guid id, CancellationToken ct = default)
     {
         var expense = await _expenseRepository.GetByIdAsync(id, ct)
-            ?? throw new DomainException($"Despesa {id} nao encontrada");
+            ?? throw new DomainException($"Despesa {id} nao encontrada", 404);
 
         await _expenseRepository.DeleteAsync(expense, ct);
     }

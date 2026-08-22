@@ -1,3 +1,4 @@
+using FinChat.Api.Middleware;
 using FinChat.Application;
 using FinChat.Infrastructure;
 using FinChat.Infrastructure.Persistence;
@@ -8,15 +9,25 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-// Adicionar a camada de Aplicação (Services e DTOs)
+//CORS config (allows frontend request)
+builder.Services.AddCors(options => 
+{
+    options.AddPolicy("AllowAll", policy => {
+        policy.AllowAnyOrigin()   // allows any origin
+              .AllowAnyMethod()   // allows any method(get,post, put, delete)
+              .AllowAnyHeader();  // allows any header(customized Http headers)
+    });
+});
+
+// Add Application layer (Services and DTOs)
 builder.Services.AddApplication();
 
-// Adicionar a camada de Infraestrutura (AppDbContext, EF Core com PostgreSQL, Repositórios)
+// Add Infrastructure layer (AppDbContext, EF Core with PostgreSQL, Repositories)
 builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
-// Executar migrations e seed do banco de dados na inicialização
+// run migrations and seed
 await DbInitializer.InitializeAsync(app.Services);
 
 // Configure the HTTP request pipeline.
@@ -26,6 +37,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAll");
+
+// global exception middleware
+app.UseMiddleware<DomainExceptionMiddleware>();
 
 app.UseAuthorization();
 

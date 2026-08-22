@@ -4,7 +4,7 @@ using FinChat.Application.Dtos.Expenses;
 
 public interface IExpenseService
 {
-    Task<List<ExpenseResponse>> GetAllAsync(CancellationToken ct = default);
+    Task<List<ExpenseResponse>> GetAllAsync(DateTime? startDate = null, DateTime? endDate = null,Guid? categoryId = null, CancellationToken ct = default);
     Task<ExpenseResponse> GetByIdAsync(Guid id, CancellationToken ct = default);
     Task<List<ExpenseResponse>> GetByCategoryIdAsync(Guid categoryId, CancellationToken ct = default);
     Task<ExpenseResponse> CreateAsync(CreateExpenseRequest request, CancellationToken ct = default);
