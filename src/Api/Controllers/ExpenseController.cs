@@ -16,8 +16,8 @@ public class ExpenseController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ExpenseResponse>>> GetAll(CancellationToken ct)
-        => Ok(await _expenseService.GetAllAsync(ct));
+    public async Task<ActionResult<List<ExpenseResponse>>> GetAll([FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery]Guid? categoryId, CancellationToken ct)
+        => Ok(await _expenseService.GetAllAsync(startDate, endDate, categoryId, ct));
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<ExpenseResponse>> GetById(Guid id, CancellationToken ct)

@@ -18,9 +18,9 @@ public class ExpenseService : IExpenseService
         _categoryRepository = categoryRepository;
     }
 
-    public async Task<List<ExpenseResponse>> GetAllAsync(CancellationToken ct = default)
+    public async Task<List<ExpenseResponse>> GetAllAsync(DateTime? startDate = null, DateTime? endDate = null, Guid? categoryId = null, CancellationToken ct = default)
     {
-        var expenses = await _expenseRepository.GetAllAsync(ct);
+        var expenses = await _expenseRepository.GetAllAsync(startDate, endDate, categoryId, ct);
         return expenses.Select(MapToResponse).ToList();
     }
 

@@ -20,12 +20,27 @@ public class ExpenseRepository : IExpenseRepository
             .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
     }
 
-    public async Task<List<Expense>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<List<Expense>> GetAllAsync(
+    DateTime?  startDate = null,
+    DateTime? endDate = null,
+    Guid? categoryId = null,
+    CancellationToken cancellationToken = default)
     {
-        return await _context.Expenses
-            .Include(e => e.Category)
-            .AsNoTracking()
-            .ToListAsync(cancellationToken);
+        var query = _context.Expenses
+        .Include(e => e.Category)
+        .AsNoTracking();
+
+        //dynamic filters
+        if(startDate.HasValue) 
+            query = query.Where(e => e.Date >= startDate.Value);
+        if(endDate.HasValue)
+        query = query.Where(e => e.Date <= endDate.Value);
+        if(categoryId.HasValue)
+        query = query.Where(e => e.CategoryId == categoryId.Value);    
+
+        return await query
+        .OrderByDescending(e => e.Date)
+        .ToListAsync(cancellationToken);
     }
 
     public async Task<List<Expense>> GetByCategoryIdAsync(Guid categoryId, CancellationToken cancellationToken = default)
