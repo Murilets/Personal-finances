@@ -1,0 +1,127 @@
+import { useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Button, Dialog, Portal, Text } from 'react-native-paper';
+import CategoryCard from '../components/CategoryCard';
+import CategoryFormDialog, { CategoryFormValues } from '../components/CategoryFormDialog';
+import EmptyState from '../components/EmptyState';
+import ErrorState from '../components/ErrorState';
+import LoadingState from '../components/LoadingState';
+import { ApiError } from '../services/api';
+import { customColors } from '../constants/theme';
+import { useCategories } from '../hooks/useCategories';
+import { Category } from '../types/category';
+
+export default function CategoriesScreen() {
+  const { categories, isLoading, isError, refetch, create, update, remove } = useCategories();
+  const [formVisible, setFormVisible] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
+
+  const mutationError =
+    (create.error as ApiError | null)?.message ??
+    (update.error as ApiError | null)?.message ??
+    null;
+
+  const openCreate = () => {
+    setEditingCategory(null);
+    setFormVisible(true);
+  };
+
+  const openEdit = (category: Category) => {
+    setEditingCategory(category);
+    setFormVisible(true);
+  };
+
+  const closeForm = () => {
+    setFormVisible(false);
+    create.reset();
+    update.reset();
+  };
+
+  const handleSubmit = (values: CategoryFormValues) => {
+    const request = { name: values.name, description: values.description || null };
+    if (editingCategory) {
+      update.mutate(
+        { id: editingCategory.id, request },
+        { onSuccess: () => setFormVisible(false) }
+      );
+    } else {
+      create.mutate(request, { onSuccess: () => setFormVisible(false) });
+    }
+  };
+
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    remove.mutate(deleteTarget.id, { onSuccess: () => setDeleteTarget(null) });
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text variant="headlineSmall">Categorias</Text>
+      <Text style={styles.subtitle}>Organize seus gastos por tipo</Text>
+
+      <Button mode="contained" onPress={openCreate} style={styles.addButton}>
+        + Nova categoria
+      </Button>
+
+      {isLoading && <LoadingState />}
+      {isError && <ErrorState message="Não foi possível carregar as categorias." onRetry={refetch} />}
+      {!isLoading && !isError && categories.length === 0 && (
+        <EmptyState message="Nenhuma categoria cadastrada ainda." />
+      )}
+      {!isLoading && !isError && categories.length > 0 && (
+        <View style={styles.grid}>
+          {categories.map((category) => (
+            <CategoryCard
+              key={category.id}
+              category={category}
+              onEdit={() => openEdit(category)}
+              onDelete={() => setDeleteTarget(category)}
+            />
+          ))}
+        </View>
+      )}
+
+      <CategoryFormDialog
+        visible={formVisible}
+        category={editingCategory}
+        onDismiss={closeForm}
+        onSubmit={handleSubmit}
+        submitting={create.isPending || update.isPending}
+        errorMessage={mutationError}
+      />
+
+      <Portal>
+        <Dialog visible={!!deleteTarget} onDismiss={() => setDeleteTarget(null)}>
+          <Dialog.Title>Excluir categoria</Dialog.Title>
+          <Dialog.Content>
+            <Text>
+              Tem certeza que deseja excluir "{deleteTarget?.name}"? Essa ação não pode ser
+              desfeita.
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setDeleteTarget(null)} disabled={remove.isPending}>
+              Cancelar
+            </Button>
+            <Button
+              onPress={confirmDelete}
+              loading={remove.isPending}
+              disabled={remove.isPending}
+              textColor={customColors.expense}
+            >
+              Excluir
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { padding: 36 },
+  subtitle: { color: customColors.textSecondary, marginTop: 4, marginBottom: 24 },
+  addButton: { alignSelf: 'flex-start', marginBottom: 24 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 14 },
+});

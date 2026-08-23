@@ -1,20 +1,72 @@
+import { NavigationContainer } from '@react-navigation/native';
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  useFonts,
+} from '@expo-google-fonts/inter';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+import { PaperProvider } from 'react-native-paper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import AppShell from './components/layout/AppShell';
+import { theme } from './constants/theme';
+import { ActiveRouteProvider, useSetActiveRoute } from './navigation/ActiveRouteContext';
+import { navigationRef } from './navigation/navigationRef';
+import RootNavigator from './navigation/RootNavigator';
+import { RouteName } from './navigation/types';
+
+SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient();
 
 export default function App() {
+  const [fontsLoaded, fontsError] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded || fontsError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontsError]);
+
+  if (!fontsLoaded && !fontsError) {
+    return null;
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <PaperProvider theme={theme}>
+          <ActiveRouteProvider>
+            <NavigationTree />
+          </ActiveRouteProvider>
+          <StatusBar style="auto" />
+        </PaperProvider>
+      </QueryClientProvider>
+    </SafeAreaProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+function NavigationTree() {
+  const setActiveRoute = useSetActiveRoute();
+
+  return (
+    <NavigationContainer
+      ref={navigationRef}
+      onReady={() => setActiveRoute(navigationRef.getCurrentRoute()?.name as RouteName)}
+      onStateChange={() => setActiveRoute(navigationRef.getCurrentRoute()?.name as RouteName)}
+    >
+      <AppShell>
+        <RootNavigator />
+      </AppShell>
+    </NavigationContainer>
+  );
+}
