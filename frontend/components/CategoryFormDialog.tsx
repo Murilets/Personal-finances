@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
 import { Button, Dialog, HelperText, Portal, TextInput } from 'react-native-paper';
+import { customColors } from '../constants/theme';
 import { Category } from '../types/category';
 
 export interface CategoryFormValues {
@@ -44,9 +46,11 @@ export default function CategoryFormDialog({
 
   return (
     <Portal>
-      <Dialog visible={visible} onDismiss={onDismiss}>
-        <Dialog.Title>{category ? 'Editar categoria' : 'Nova categoria'}</Dialog.Title>
-        <Dialog.Content style={{ gap: 12 }}>
+      <Dialog visible={visible} onDismiss={onDismiss} style={styles.dialog}>
+        <Dialog.Title style={styles.dialogTitle}>
+          {category ? 'Editar categoria' : 'Nova categoria'}
+        </Dialog.Title>
+        <Dialog.Content style={styles.dialogContent}>
           <TextInput
             label="Nome"
             value={name}
@@ -76,3 +80,22 @@ export default function CategoryFormDialog({
     </Portal>
   );
 }
+
+const styles = StyleSheet.create({
+  dialog: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: customColors.border,
+    borderRadius: 12,
+    maxWidth: 440,
+    width: '90%',
+    alignSelf: 'center',
+  },
+  dialogTitle: {
+    color: '#000000',
+  },
+  dialogContent: {
+    flexDirection: 'column',
+    gap: 14,
+  },
+});

@@ -1,20 +1,13 @@
-import { LayoutGrid, MessageCircle, Receipt, Tag } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { customColors } from '../../constants/theme';
+import { useNavItems } from '../../hooks/useNavItems';
 import { useActiveRoute } from '../../navigation/ActiveRouteContext';
 import { navigate } from '../../navigation/navigationRef';
-import { RouteName } from '../../navigation/types';
-
-const NAV_ITEMS: Array<{ route: RouteName; label: string; icon: typeof Receipt }> = [
-  { route: 'Expenses', label: 'Despesas', icon: Receipt },
-  { route: 'Categories', label: 'Categorias', icon: Tag },
-  { route: 'Chat', label: 'Chat', icon: MessageCircle },
-  { route: 'Dashboard', label: 'Dashboard', icon: LayoutGrid },
-];
 
 export default function Sidebar() {
   const activeRoute = useActiveRoute();
+  const navItems = useNavItems();
 
   return (
     <View style={styles.sidebar}>
@@ -26,7 +19,7 @@ export default function Sidebar() {
       </View>
 
       <View style={styles.nav}>
-        {NAV_ITEMS.map(({ route, label, icon: Icon }) => {
+        {navItems.map(({ route, label, icon: Icon }) => {
           const active = activeRoute === route;
           return (
             <Pressable
