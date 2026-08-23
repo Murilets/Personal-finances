@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Button, Dialog, HelperText, Menu, Portal, TextInput } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+import { Button, Dialog, HelperText, Portal, TextInput } from 'react-native-paper';
+import CategorySelect from './CategorySelect';
+import { customColors } from '../constants/theme';
 import { Category } from '../types/category';
 import { Expense } from '../types/expense';
 
@@ -35,7 +38,6 @@ export default function ExpenseFormDialog({
   const [date, setDate] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [note, setNote] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
   const [touched, setTouched] = useState(false);
 
   useEffect(() => {
@@ -51,7 +53,6 @@ export default function ExpenseFormDialog({
   const amountValue = Number(amount.replace(',', '.'));
   const amountError = touched && (!amount || Number.isNaN(amountValue) || amountValue <= 0);
   const categoryError = touched && !categoryId;
-  const selectedCategory = categories.find((c) => c.id === categoryId);
 
   const handleSubmit = () => {
     setTouched(true);
@@ -61,9 +62,11 @@ export default function ExpenseFormDialog({
 
   return (
     <Portal>
-      <Dialog visible={visible} onDismiss={onDismiss}>
-        <Dialog.Title>{expense ? 'Editar despesa' : 'Nova despesa'}</Dialog.Title>
-        <Dialog.Content style={{ gap: 12 }}>
+      <Dialog visible={visible} onDismiss={onDismiss} style={styles.dialog}>
+        <Dialog.Title style={styles.dialogTitle}>
+          {expense ? 'Editar despesa' : 'Nova despesa'}
+        </Dialog.Title>
+        <Dialog.Content style={styles.dialogContent}>
           <TextInput
             label="Valor"
             value={amount}
@@ -75,32 +78,20 @@ export default function ExpenseFormDialog({
           {amountError && <HelperText type="error">Informe um valor maior que zero</HelperText>}
 
           <TextInput
-            label="Data (AAAA-MM-DD)"
+            label="Data"
+            placeholder="AAAA-MM-DD"
             value={date}
             onChangeText={setDate}
             mode="outlined"
           />
 
-          <Menu
-            visible={menuOpen}
-            onDismiss={() => setMenuOpen(false)}
-            anchor={
-              <Button mode="outlined" onPress={() => setMenuOpen(true)}>
-                {selectedCategory ? selectedCategory.name : 'Selecione a categoria'}
-              </Button>
-            }
-          >
-            {categories.map((category) => (
-              <Menu.Item
-                key={category.id}
-                title={category.name}
-                onPress={() => {
-                  setCategoryId(category.id);
-                  setMenuOpen(false);
-                }}
-              />
-            ))}
-          </Menu>
+          <CategorySelect
+            label="Categoria"
+            value={categoryId}
+            onChange={(val) => setCategoryId(val ?? '')}
+            categories={categories}
+            error={categoryError}
+          />
           {categoryError && <HelperText type="error">Selecione uma categoria</HelperText>}
 
           <TextInput
@@ -124,3 +115,22 @@ export default function ExpenseFormDialog({
     </Portal>
   );
 }
+
+const styles = StyleSheet.create({
+  dialog: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: customColors.border,
+    borderRadius: 12,
+    maxWidth: 440,
+    width: '90%',
+    alignSelf: 'center',
+  },
+  dialogTitle: {
+    color: customColors.text,
+  },
+  dialogContent: {
+    flexDirection: 'column',
+    gap: 14,
+  },
+});

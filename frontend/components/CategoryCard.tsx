@@ -52,6 +52,6 @@ const styles = StyleSheet.create({
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 },
   dot: { width: 10, height: 10, borderRadius: 5 },
   name: { fontSize: 15, fontWeight: '600', color: customColors.text },
-  actions: { flexDirection: 'row', gap: 12 },
+  actions: { flexDirection: 'row', gap: 14, justifyContent: 'flex-end', marginLeft: 'auto' },
   description: { fontSize: 13, color: customColors.textSecondary, marginTop: 4 },
 });

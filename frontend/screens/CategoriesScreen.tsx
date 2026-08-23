@@ -57,12 +57,15 @@ export default function CategoriesScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text variant="headlineSmall">Categorias</Text>
-      <Text style={styles.subtitle}>Organize seus gastos por tipo</Text>
-
-      <Button mode="contained" onPress={openCreate} style={styles.addButton}>
-        + Nova categoria
-      </Button>
+      <View style={styles.topRow}>
+        <View>
+          <Text variant="headlineSmall">Categorias</Text>
+          <Text style={styles.subtitle}>Organize seus gastos por tipo</Text>
+        </View>
+        <Button mode="contained" onPress={openCreate}>
+          + Nova categoria
+        </Button>
+      </View>
 
       {isLoading && <LoadingState />}
       {isError && <ErrorState message="Não foi possível carregar as categorias." onRetry={refetch} />}
@@ -92,8 +95,8 @@ export default function CategoriesScreen() {
       />
 
       <Portal>
-        <Dialog visible={!!deleteTarget} onDismiss={() => setDeleteTarget(null)}>
-          <Dialog.Title>Excluir categoria</Dialog.Title>
+        <Dialog visible={!!deleteTarget} onDismiss={() => setDeleteTarget(null)} style={styles.dialog}>
+          <Dialog.Title style={styles.dialogTitle}>Excluir categoria</Dialog.Title>
           <Dialog.Content>
             <Text>
               Tem certeza que deseja excluir "{deleteTarget?.name}"? Essa ação não pode ser
@@ -121,7 +124,26 @@ export default function CategoriesScreen() {
 
 const styles = StyleSheet.create({
   container: { padding: 36 },
-  subtitle: { color: customColors.textSecondary, marginTop: 4, marginBottom: 24 },
-  addButton: { alignSelf: 'flex-start', marginBottom: 24 },
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 24,
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  subtitle: { color: customColors.textSecondary, marginTop: 4 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 14 },
+  dialog: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: customColors.border,
+    borderRadius: 12,
+    maxWidth: 440,
+    width: '90%',
+    alignSelf: 'center',
+  },
+  dialogTitle: {
+    color: '#000000',
+  },
 });

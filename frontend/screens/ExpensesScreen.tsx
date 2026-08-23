@@ -180,8 +180,8 @@ export default function ExpensesScreen() {
       />
 
       <Portal>
-        <Dialog visible={!!deleteTarget} onDismiss={() => setDeleteTarget(null)}>
-          <Dialog.Title>Excluir despesa</Dialog.Title>
+        <Dialog visible={!!deleteTarget} onDismiss={() => setDeleteTarget(null)} style={styles.dialog}>
+          <Dialog.Title style={styles.dialogTitle}>Excluir despesa</Dialog.Title>
           <Dialog.Content>
             <Text>Tem certeza que deseja excluir essa despesa? Essa ação não pode ser desfeita.</Text>
           </Dialog.Content>
@@ -215,4 +215,16 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   list: { gap: 10 },
+  dialog: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: customColors.border,
+    borderRadius: 12,
+    maxWidth: 440,
+    width: '90%',
+    alignSelf: 'center',
+  },
+  dialogTitle: {
+    color: '#000000',
+  },
 });
