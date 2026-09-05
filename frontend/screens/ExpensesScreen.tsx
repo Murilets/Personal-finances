@@ -121,7 +121,7 @@ export default function ExpensesScreen() {
 
       <View style={styles.topRow}>
         <ExpenseFilters categories={categories} filters={filters} onChange={handleFiltersChange} />
-        <Button mode="contained" onPress={openCreate}>
+        <Button mode="contained" onPress={openCreate} style={styles.createButton}>
           + Nova despesa
         </Button>
       </View>
@@ -206,13 +206,19 @@ export default function ExpensesScreen() {
 
 const styles = StyleSheet.create({
   container: { padding: 36 },
-  subtitle: { color: customColors.textSecondary, marginTop: 4, marginBottom: 24 },
+  subtitle: { color: customColors.textSecondary, marginTop: 4, marginBottom: 20 },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    marginBottom: 20,
     flexWrap: 'wrap',
     gap: 12,
+  },
+  createButton: {
+    borderRadius: 6,
+    height: 40,
+    justifyContent: 'center',
   },
   list: { gap: 10 },
   dialog: {
