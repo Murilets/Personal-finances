@@ -10,6 +10,7 @@ import ExpenseTable, { SortDir, SortKey } from '../components/ExpenseTable';
 import LoadingState from '../components/LoadingState';
 import Pagination from '../components/Pagination';
 import { customColors } from '../constants/theme';
+import { useSnackbar } from '../context/SnackbarContext';
 import { useCategories } from '../hooks/useCategories';
 import { useExpenses } from '../hooks/useExpenses';
 import { ApiError } from '../services/api';
@@ -21,6 +22,7 @@ export default function ExpensesScreen() {
   const { width } = useWindowDimensions();
   const isWide = width >= WIDE_BREAKPOINT;
 
+  const { showSuccess, showError } = useSnackbar();
   const [filters, setFilters] = useState<ExpenseFiltersValue>({});
   const { categories } = useCategories();
   const { expenses, isLoading, isError, refetch, create, update, remove } = useExpenses(filters);
@@ -102,16 +104,43 @@ export default function ExpensesScreen() {
     if (editingExpense) {
       update.mutate(
         { id: editingExpense.id, request },
-        { onSuccess: () => setFormVisible(false) }
+        {
+          onSuccess: () => {
+            setFormVisible(false);
+            showSuccess('Despesa atualizada com sucesso!');
+          },
+          onError: (error) => {
+            const apiError = error as ApiError;
+            showError(apiError?.message || 'Erro ao atualizar despesa');
+          },
+        }
       );
     } else {
-      create.mutate(request, { onSuccess: () => setFormVisible(false) });
+      create.mutate(request, {
+        onSuccess: () => {
+          setFormVisible(false);
+          showSuccess('Despesa cadastrada com sucesso!');
+        },
+        onError: (error) => {
+          const apiError = error as ApiError;
+          showError(apiError?.message || 'Erro ao cadastrar despesa');
+        },
+      });
     }
   };
 
   const confirmDelete = () => {
     if (!deleteTarget) return;
-    remove.mutate(deleteTarget.id, { onSuccess: () => setDeleteTarget(null) });
+    remove.mutate(deleteTarget.id, {
+      onSuccess: () => {
+        setDeleteTarget(null);
+        showSuccess('Despesa excluída com sucesso!');
+      },
+      onError: (error) => {
+        const apiError = error as ApiError;
+        showError(apiError?.message || 'Erro ao excluir despesa');
+      },
+    });
   };
 
   return (
