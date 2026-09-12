@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Button, Dialog, HelperText, Portal, TextInput } from 'react-native-paper';
 import CategorySelect from './CategorySelect';
+import DateInput from './DateInput';
 import { customColors } from '../constants/theme';
+import { useCurrencyInput } from '../hooks/useCurrencyInput';
+import { useDateInput } from '../hooks/useDateInput';
 import { Category } from '../types/category';
 import { Expense } from '../types/expense';
 
@@ -34,30 +37,30 @@ export default function ExpenseFormDialog({
   submitting: boolean;
   errorMessage?: string | null;
 }) {
-  const [amount, setAmount] = useState('');
-  const [date, setDate] = useState('');
+  const currencyInput = useCurrencyInput(0);
+  const dateInput = useDateInput(todayIso());
   const [categoryId, setCategoryId] = useState('');
   const [note, setNote] = useState('');
   const [touched, setTouched] = useState(false);
 
   useEffect(() => {
     if (visible) {
-      setAmount(expense ? String(expense.amount) : '');
-      setDate(expense ? expense.date.slice(0, 10) : todayIso());
+      currencyInput.setNumericValue(expense ? expense.amount : 0);
+      dateInput.setDateValue(expense ? expense.date.slice(0, 10) : todayIso());
       setCategoryId(expense?.categoryId ?? categories[0]?.id ?? '');
       setNote(expense?.note ?? '');
       setTouched(false);
     }
   }, [visible, expense, categories]);
 
-  const amountValue = Number(amount.replace(',', '.'));
-  const amountError = touched && (!amount || Number.isNaN(amountValue) || amountValue <= 0);
+  const amountError = touched && currencyInput.numericValue <= 0;
+  const dateError = touched && !dateInput.isoValue;
   const categoryError = touched && !categoryId;
 
   const handleSubmit = () => {
     setTouched(true);
-    if (!amount || Number.isNaN(amountValue) || amountValue <= 0 || !categoryId) return;
-    onSubmit({ amount, date, categoryId, note: note.trim() });
+    if (currencyInput.numericValue <= 0 || !dateInput.isoValue || !categoryId) return;
+    onSubmit({ amount: String(currencyInput.numericValue), date: dateInput.isoValue, categoryId, note: note.trim() });
   };
 
   return (
@@ -69,21 +72,22 @@ export default function ExpenseFormDialog({
         <Dialog.Content style={styles.dialogContent}>
           <TextInput
             label="Valor"
-            value={amount}
-            onChangeText={setAmount}
+            value={currencyInput.formattedValue}
+            onChangeText={currencyInput.handleChangeText}
             mode="outlined"
-            keyboardType="decimal-pad"
+            keyboardType="number-pad"
+            maxLength={15}
             error={amountError}
           />
           {amountError && <HelperText type="error">Informe um valor maior que zero</HelperText>}
 
-          <TextInput
+          <DateInput
             label="Data"
-            placeholder="AAAA-MM-DD"
-            value={date}
-            onChangeText={setDate}
-            mode="outlined"
+            value={dateInput.displayValue}
+            onChangeText={dateInput.handleChangeText}
+            error={dateError}
           />
+          {dateError && <HelperText type="error">Informe uma data válida (DD/MM/AAAA)</HelperText>}
 
           <CategorySelect
             label="Categoria"

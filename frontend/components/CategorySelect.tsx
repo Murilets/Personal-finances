@@ -12,6 +12,7 @@ export default function CategorySelect({
   placeholder = 'Selecione a categoria',
   error = false,
   showAllOption = false,
+  dense = false,
 }: {
   label?: string;
   value?: string;
@@ -20,11 +21,14 @@ export default function CategorySelect({
   placeholder?: string;
   error?: boolean;
   showAllOption?: boolean;
+  dense?: boolean;
 }) {
+  const wrapperHeight = dense ? 40 : 48;
+
   return (
     <View style={styles.container}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <View style={[styles.selectWrapper, error && styles.selectWrapperError]}>
+      <View style={[styles.selectWrapper, { height: wrapperHeight }, error && styles.selectWrapperError]}>
         <select
           value={value ?? ''}
           onChange={(e) => {
@@ -33,11 +37,11 @@ export default function CategorySelect({
           }}
           style={{
             width: '100%',
-            height: '46px',
+            height: '100%',
             border: 'none',
             outline: 'none',
             backgroundColor: 'transparent',
-            paddingLeft: '14px',
+            paddingLeft: '12px',
             paddingRight: '36px',
             fontSize: '14px',
             color: value ? customColors.text : customColors.textSecondary,
@@ -84,16 +88,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: customColors.border,
-    borderRadius: 4,
+    borderRadius: 8,
     backgroundColor: '#FFFFFF',
-    height: 48,
   },
   selectWrapperError: {
     borderColor: customColors.expense,
   },
   chevronWrapper: {
     position: 'absolute',
-    right: 14,
+    right: 12,
     justifyContent: 'center',
     alignItems: 'center',
   },
