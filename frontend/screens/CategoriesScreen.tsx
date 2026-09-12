@@ -8,11 +8,13 @@ import ErrorState from '../components/ErrorState';
 import LoadingState from '../components/LoadingState';
 import { ApiError } from '../services/api';
 import { customColors } from '../constants/theme';
+import { useSnackbar } from '../context/SnackbarContext';
 import { useCategories } from '../hooks/useCategories';
 import { Category } from '../types/category';
 
 export default function CategoriesScreen() {
   const { categories, isLoading, isError, refetch, create, update, remove } = useCategories();
+  const { showSuccess, showError } = useSnackbar();
   const [formVisible, setFormVisible] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
@@ -43,17 +45,46 @@ export default function CategoriesScreen() {
     if (editingCategory) {
       update.mutate(
         { id: editingCategory.id, request },
-        { onSuccess: () => setFormVisible(false) }
+        {
+          onSuccess: () => {
+            setFormVisible(false);
+            showSuccess('Categoria atualizada com sucesso!');
+          },
+          onError: (error) => {
+            const apiError = error as ApiError;
+            showError(apiError?.message || 'Erro ao atualizar categoria');
+          },
+        }
       );
     } else {
-      create.mutate(request, { onSuccess: () => setFormVisible(false) });
+      create.mutate(request, {
+        onSuccess: () => {
+          setFormVisible(false);
+          showSuccess('Categoria criada com sucesso!');
+        },
+        onError: (error) => {
+          const apiError = error as ApiError;
+          showError(apiError?.message || 'Erro ao criar categoria');
+        },
+      });
     }
   };
 
   const confirmDelete = () => {
     if (!deleteTarget) return;
-    remove.mutate(deleteTarget.id, { onSuccess: () => setDeleteTarget(null) });
+    remove.mutate(deleteTarget.id, {
+      onSuccess: () => {
+        setDeleteTarget(null);
+        showSuccess('Categoria excluída com sucesso!');
+      },
+      onError: (error) => {
+        const apiError = error as ApiError;
+        setDeleteTarget(null);
+        showError(apiError?.message || 'Erro ao excluir categoria');
+      },
+    });
   };
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

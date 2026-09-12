@@ -32,6 +32,11 @@ export const customColors = {
   warning: '#D97706',
 };
 
+export const snackbarColor = {
+  success: '#1ace5cff',
+  error: '#fa1616ff',
+}
+
 export const fontConfig = {
   fontFamily: 'Inter_400Regular',
 };

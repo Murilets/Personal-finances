@@ -14,6 +14,7 @@ import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AppShell from './components/layout/AppShell';
 import { theme } from './constants/theme';
+import { SnackbarProvider } from './context/SnackbarContext';
 import { ActiveRouteProvider, useSetActiveRoute } from './navigation/ActiveRouteContext';
 import { navigationRef } from './navigation/navigationRef';
 import RootNavigator from './navigation/RootNavigator';
@@ -45,10 +46,12 @@ export default function App() {
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
         <PaperProvider theme={theme}>
-          <ActiveRouteProvider>
-            <NavigationTree />
-          </ActiveRouteProvider>
-          <StatusBar style="auto" />
+          <SnackbarProvider>
+            <ActiveRouteProvider>
+              <NavigationTree />
+            </ActiveRouteProvider>
+            <StatusBar style="auto" />
+          </SnackbarProvider>
         </PaperProvider>
       </QueryClientProvider>
     </SafeAreaProvider>
