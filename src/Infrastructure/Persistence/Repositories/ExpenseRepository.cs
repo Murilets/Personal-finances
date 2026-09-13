@@ -69,4 +69,30 @@ public class ExpenseRepository : IExpenseRepository
         _context.Expenses.Remove(expense);
         await _context.SaveChangesAsync(cancellationToken);
     }
+    public async Task<List<CategoryTotal>> GetTotalsByCategoryAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default)
+    {
+        var expenses = _context.Expenses.AsNoTracking();
+        if (startUtc.HasValue)
+           expenses = expenses.Where(e => e.Date >= startUtc.Value);
+        if (endUtc.HasValue)
+           expenses = expenses.Where(e => e.Date <= endUtc.Value);
+           
+           // Start from Categories so categories with no spending in the period appear with 0
+         return await _context.Categories.AsNoTracking()
+         .Select(c => new CategoryTotal(
+            c.Id,
+            c.Name,
+            expenses.Where(e => e.CategoryId == c.Id)
+            .Sum(e => (decimal?)e.Amount) ?? 0m ))
+            .ToListAsync(cancellationToken);   
+    }
+    public async Task<List<YearMonth>> GetMonthsWithExpensesAsync(CancellationToken cancellationToken)
+    {
+        var months = await _context.Expenses.AsNoTracking()
+        .Select(e => new { e.Date.Year, e.Date.Month })
+        .Distinct()
+        .OrderByDescending(m => m.Year).ThenByDescending(m => m.Month)
+        .ToListAsync(cancellationToken);
+        return months.Select(m => YearMonth.Create(m.Year, m.Month)).ToList();
+    }
 }
