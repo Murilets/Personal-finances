@@ -34,4 +34,13 @@ Content-Type: application/json
   "note": "Mercado"
 }
 
+###  Dashboard
+GET {{FinChat.Api_HostAddress}}/api/dashboard/summary
 ###
+GET {{FinChat.Api_HostAddress}}/api/dashboard/by-category?year=2026&month=9
+###
+GET {{FinChat.Api_HostAddress}}/api/dashboard/by-category
+###
+GET {{FinChat.Api_HostAddress}}/api/dashboard/months
+###
+GET {{FinChat.Api_HostAddress}}/api/dashboard/by-category?year=2026

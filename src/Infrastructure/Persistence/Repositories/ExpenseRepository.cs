@@ -2,6 +2,8 @@ namespace FinChat.Infrastructure.Persistence.Repositories;
 
 using FinChat.Domain.Entities;
 using FinChat.Domain.Interfaces;
+using FinChat.Domain.ReadModel;
+using FinChat.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 public class ExpenseRepository : IExpenseRepository
@@ -69,13 +71,14 @@ public class ExpenseRepository : IExpenseRepository
         _context.Expenses.Remove(expense);
         await _context.SaveChangesAsync(cancellationToken);
     }
-    public async Task<List<CategoryTotal>> GetTotalsByCategoryAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default)
+    public async Task<List<CategoryTotal>> GetTotalsByCategoryAsync(DateTime? startUtc = null, DateTime? endUtc = null, CancellationToken cancellationToken = default)
     {
         var expenses = _context.Expenses.AsNoTracking();
         if (startUtc.HasValue)
            expenses = expenses.Where(e => e.Date >= startUtc.Value);
+        // "<" e nao "<=": endUtc e o dia 1 do mes seguinte (intervalo semiaberto)
         if (endUtc.HasValue)
-           expenses = expenses.Where(e => e.Date <= endUtc.Value);
+           expenses = expenses.Where(e => e.Date < endUtc.Value);
            
            // Start from Categories so categories with no spending in the period appear with 0
          return await _context.Categories.AsNoTracking()
@@ -86,7 +89,7 @@ public class ExpenseRepository : IExpenseRepository
             .Sum(e => (decimal?)e.Amount) ?? 0m ))
             .ToListAsync(cancellationToken);   
     }
-    public async Task<List<YearMonth>> GetMonthsWithExpensesAsync(CancellationToken cancellationToken)
+    public async Task<List<YearMonth>> GetMonthsWithExpensesAsync(CancellationToken cancellationToken = default)
     {
         var months = await _context.Expenses.AsNoTracking()
         .Select(e => new { e.Date.Year, e.Date.Month })
