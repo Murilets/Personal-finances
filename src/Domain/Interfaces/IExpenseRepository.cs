@@ -1,6 +1,9 @@
 namespace FinChat.Domain.Interfaces;
 
 using FinChat.Domain.Entities;
+using FinChat.Domain.ReadModel;
+using FinChat.Domain.ValueObjects;
+
 
 public interface IExpenseRepository
 {

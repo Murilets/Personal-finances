@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as api from '../services/api';
 import { CreateCategoryRequest, UpdateCategoryRequest } from '../types/category';
+import { DASHBOARD_KEY } from './useDashboard';
 
 const CATEGORIES_KEY = ['categories'];
 
@@ -12,7 +13,12 @@ export function useCategories() {
     queryFn: api.getCategories,
   });
 
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: CATEGORIES_KEY });
+  // categorias aparecem (nome/contagem) no dashboard
+  const invalidate = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: CATEGORIES_KEY }),
+      queryClient.invalidateQueries({ queryKey: DASHBOARD_KEY }),
+    ]);
 
   const create = useMutation({
     mutationFn: (request: CreateCategoryRequest) => api.createCategory(request),

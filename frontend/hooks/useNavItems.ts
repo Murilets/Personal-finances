@@ -1,4 +1,4 @@
-import { Receipt, Tag } from 'lucide-react-native';
+import { LayoutDashboard, Receipt, Tag } from 'lucide-react-native';
 import { RouteName } from '../navigation/types';
 
 export interface NavItem {
@@ -8,6 +8,7 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
+  { route: 'Dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { route: 'Expenses', label: 'Despesas', icon: Receipt },
   { route: 'Categories', label: 'Categorias', icon: Tag },
 ];

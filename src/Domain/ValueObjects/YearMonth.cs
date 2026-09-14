@@ -1,10 +1,11 @@
 namespace FinChat.Domain.ValueObjects;
-using Finchat.Domain.Exceptions;
+
+using FinChat.Domain.Exceptions;
 
 public sealed record YearMonth
 {
-    public init Year {get;}
-    public init Month {get;}
+    public int Year { get; }
+    public int Month { get; }
 
     private YearMonth(int year, int month)
     {
@@ -14,13 +15,13 @@ public sealed record YearMonth
     {
         if (month is < 1 or > 12)
         throw new DomainException ("Mes invalido");
-        if (year < 2000 or > 2100)
+        if (year is < 2000 or > 2100)
             throw new DomainException ("Ano invalido");
             return new YearMonth(year,month);   
     }
     public static YearMonth FromDate(DateTime date) => new (date.Year, date.Month);
 
     // range
-    public DateTime StartUtc => new (yYear, Month, 1, 0, 0, 0 DateTimeKind.Utc);
+    public DateTime StartUtc => new (Year, Month, 1, 0, 0, 0, DateTimeKind.Utc);
     public DateTime EndUtc => StartUtc.AddMonths(1);
 }
