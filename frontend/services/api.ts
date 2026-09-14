@@ -2,6 +2,12 @@ import axios, { AxiosError } from 'axios';
 import { Platform } from 'react-native';
 import { Category, CreateCategoryRequest, UpdateCategoryRequest } from '../types/category';
 import {
+  CategoryBreakdown,
+  DashboardPeriod,
+  DashboardSummary,
+  MonthOption,
+} from '../types/dashboard';
+import {
   CreateExpenseRequest,
   Expense,
   ExpenseFilters,
@@ -92,4 +98,23 @@ export async function updateExpense(id: string, request: UpdateExpenseRequest): 
 
 export async function deleteExpense(id: string): Promise<void> {
   await client.delete(`/api/expenses/${id}`);
+}
+
+// Dashboard
+
+export async function getDashboardSummary(): Promise<DashboardSummary> {
+  const { data } = await client.get<DashboardSummary>('/api/dashboard/summary');
+  return data;
+}
+
+// period null = todos os meses (sem query params)
+export async function getDashboardByCategory(period: DashboardPeriod): Promise<CategoryBreakdown> {
+  const params = period ? { year: period.year, month: period.month } : undefined;
+  const { data } = await client.get<CategoryBreakdown>('/api/dashboard/by-category', { params });
+  return data;
+}
+
+export async function getDashboardMonths(): Promise<MonthOption[]> {
+  const { data } = await client.get<MonthOption[]>('/api/dashboard/months');
+  return data;
 }

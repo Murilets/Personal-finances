@@ -10,6 +10,8 @@ public static class DependencyInjection
     {
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IExpenseService, ExpenseService>();
+        services.AddScoped<IDashboardService, DashboardService>();
+        services.AddSingleton(TimeProvider.System);
 
         return services;
     }

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as api from '../services/api';
 import { CreateExpenseRequest, ExpenseFilters, UpdateExpenseRequest } from '../types/expense';
+import { DASHBOARD_KEY } from './useDashboard';
 
 function expensesKey(filters: ExpenseFilters) {
   return ['expenses', filters] as const;
@@ -14,7 +15,12 @@ export function useExpenses(filters: ExpenseFilters = {}) {
     queryFn: () => api.getExpenses(filters),
   });
 
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['expenses'] });
+  // despesas alteram os totais do dashboard
+  const invalidate = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['expenses'] }),
+      queryClient.invalidateQueries({ queryKey: DASHBOARD_KEY }),
+    ]);
 
   const create = useMutation({
     mutationFn: (request: CreateExpenseRequest) => api.createExpense(request),
