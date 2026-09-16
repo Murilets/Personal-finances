@@ -78,5 +78,5 @@ public class ExpenseService : IExpenseService
             MapCategory(expense.Category));
 
     private static CategoryResponse MapCategory(Category category)
-        => new(category.Id, category.Name, category.Description);
+        => new(category.Id, category.Name, category.Description, category.Color);
 }

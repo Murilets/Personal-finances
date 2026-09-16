@@ -18,5 +18,9 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
 
         builder.Property(c => c.Description)
             .HasMaxLength(250);
+        
+        builder.Property(c => c.Color)
+            .IsRequired(false)
+            .HasMaxLength(20);
     }
 }

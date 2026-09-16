@@ -2,6 +2,7 @@ export interface TopCategory {
   categoryId: string;
   categoryName: string;
   amount: number;
+  color?: string | null;
 }
 
 export interface DashboardSummary {
@@ -18,6 +19,7 @@ export interface CategorySpending {
   name: string;
   amount: number;
   percentage: number;
+  color?: string | null;
 }
 
 export interface CategoryBreakdown {

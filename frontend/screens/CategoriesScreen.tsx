@@ -41,7 +41,11 @@ export default function CategoriesScreen() {
   };
 
   const handleSubmit = (values: CategoryFormValues) => {
-    const request = { name: values.name, description: values.description || null };
+    const request = {
+      name: values.name,
+      description: values.description || null,
+      color: values.color,
+    };
     if (editingCategory) {
       update.mutate(
         { id: editingCategory.id, request },
@@ -119,6 +123,7 @@ export default function CategoriesScreen() {
       <CategoryFormDialog
         visible={formVisible}
         category={editingCategory}
+        existingCategories={categories}
         onDismiss={closeForm}
         onSubmit={handleSubmit}
         submitting={create.isPending || update.isPending}
