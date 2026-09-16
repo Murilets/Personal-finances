@@ -51,7 +51,7 @@ export default function ExpenseTable({
       </DataTable.Header>
 
       {expenses.map((expense) => {
-        const color = getCategoryColor(expense.categoryId);
+        const color = getCategoryColor(expense.category ?? expense.categoryId);
         return (
           <DataTable.Row key={expense.id}>
             <DataTable.Cell style={styles.dateCol}>{formatDate(expense.date)}</DataTable.Cell>

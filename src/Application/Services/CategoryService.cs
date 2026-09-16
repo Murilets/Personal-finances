@@ -33,7 +33,7 @@ public class CategoryService : ICategoryService
         if (await _repository.ExistsByNameAsync(request.Name, ct))
             throw new DomainException($"Categoria com o nome '{request.Name}' ja existe");
 
-        var category = Category.Create(request.Name, request.Description);
+        var category = Category.Create(request.Name, request.Description, request.Color);
         await _repository.AddAsync(category, ct);
         return MapToResponse(category);
     }
@@ -46,7 +46,7 @@ public class CategoryService : ICategoryService
         if (await _repository.ExistsByNameAsync(request.Name, ct) && category.Name != request.Name)
             throw new DomainException($"Já existe uma categoria com o nome '{request.Name}'.");
 
-        category.Update(request.Name, request.Description);
+        category.Update(request.Name, request.Description, request.Color);
         await _repository.UpdateAsync(category, ct);
 
         return MapToResponse(category);
@@ -61,5 +61,5 @@ public class CategoryService : ICategoryService
     }
 
     private static CategoryResponse MapToResponse(Category category)
-        => new(category.Id, category.Name, category.Description);
+        => new(category.Id, category.Name, category.Description, category.Color);
 }

@@ -22,7 +22,7 @@ export default function ExpenseListItem({
   onEdit: () => void;
   onDelete: () => void;
 }) {
-  const color = getCategoryColor(expense.categoryId);
+  const color = getCategoryColor(expense.category ?? expense.categoryId);
 
   return (
     <View style={styles.card}>

@@ -4,5 +4,6 @@ public record CategoryTotal
 (
     Guid CategoryId, 
     string CategoryName, 
-    decimal Total
+    decimal Total,
+    string? Color = null
 );

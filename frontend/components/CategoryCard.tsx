@@ -14,7 +14,7 @@ export default function CategoryCard({
   onEdit: () => void;
   onDelete: () => void;
 }) {
-  const color = getCategoryColor(category.id);
+  const color = getCategoryColor(category);
 
   return (
     <View style={styles.card}>

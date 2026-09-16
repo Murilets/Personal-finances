@@ -86,7 +86,8 @@ public class ExpenseRepository : IExpenseRepository
             c.Id,
             c.Name,
             expenses.Where(e => e.CategoryId == c.Id)
-            .Sum(e => (decimal?)e.Amount) ?? 0m ))
+            .Sum(e => (decimal?)e.Amount) ?? 0m,
+            c.Color))
             .ToListAsync(cancellationToken);   
     }
     public async Task<List<YearMonth>> GetMonthsWithExpensesAsync(CancellationToken cancellationToken = default)
