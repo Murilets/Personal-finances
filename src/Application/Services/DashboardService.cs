@@ -36,7 +36,7 @@ public class DashboardService : IDashboardService
             monthTotals.Sum(t => t.Total),
             overallTotals.Sum(t => t.Total),
             overallTotals.Count,
-            top is null ? null : new TopCategoryResponse(top.CategoryId, top.CategoryName, top.Total));
+            top is null ? null : new TopCategoryResponse(top.CategoryId, top.CategoryName, top.Total, top.Color));
     }
 
     public async Task<CategoryBreakdownResponse> GetByCategoryAsync(int? year, int? month, CancellationToken ct = default)
@@ -49,7 +49,8 @@ public class DashboardService : IDashboardService
             .OrderByDescending(t => t.Total)
             .ThenBy(t => t.CategoryName)
             .Select(t => new CategorySpendingResponse(t.CategoryId, t.CategoryName, t.Total,
-                totalAmount == 0 ? 0 : Math.Round(t.Total / totalAmount * 100, 1)))
+                totalAmount == 0 ? 0 : Math.Round(t.Total / totalAmount * 100, 1),
+                t.Color))
             .ToList();
 
         return new CategoryBreakdownResponse(period?.Year, period?.Month, totalAmount, items);

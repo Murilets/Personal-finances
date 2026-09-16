@@ -35,37 +35,50 @@ export default function DashboardScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.content}>
-        <View>
-          <Text variant="headlineSmall">Dashboard</Text>
-          <Text style={styles.subtitle}>Resumo dos seus gastos — {monthLabel}</Text>
-        </View>
-
-        {isLoading && <LoadingState />}
-        {isError && <ErrorState message="Não foi possível carregar o resumo." onRetry={refetch} />}
-        {!isLoading && !isError && summary && (
-          <View style={styles.metrics}>
-            <MetricCard label="Total do mês" value={formatBRL(summary.monthTotal)} />
-            <MetricCard label="Total geral" value={formatBRL(summary.overallTotal)} />
-            <MetricCard label="Categorias" value={String(summary.categoryCount)} />
-            <MetricCard
-              label="Maior gasto no mês"
-              value={topCategory?.categoryName ?? '—'}
-              dotColor={topCategory ? getCategoryColor(topCategory.categoryId).dot : undefined}
-              caption={topCategory ? formatBRL(topCategory.amount) : 'Sem gastos no mês'}
-            />
-          </View>
-        )}
-
-        <CategorySpendingCard
-          period={period}
-          chartType={chartType}
-          hasFilter={hasFilter}
-          onChartTypeChange={setChartType}
-          onOpenFilter={() => setFilterVisible(true)}
-          onClearFilter={() => setPeriod(currentPeriod)}
-        />
+      <View>
+        <Text variant="headlineSmall">Dashboard</Text>
+        <Text style={styles.subtitle}>Resumo dos seus gastos {monthLabel}</Text>
       </View>
+
+      {isLoading && <LoadingState />}
+      {isError && <ErrorState message="Não foi possível carregar o resumo." onRetry={refetch} />}
+      {!isLoading && !isError && summary && (
+        <View style={styles.metrics}>
+          <MetricCard
+            label="Total do mês"
+            numericValue={summary.monthTotal}
+            isCurrency
+            delay={0}
+          />
+          <MetricCard
+            label="Total geral"
+            numericValue={summary.overallTotal}
+            isCurrency
+            delay={80}
+          />
+          <MetricCard
+            label="Categorias"
+            numericValue={summary.categoryCount}
+            delay={160}
+          />
+          <MetricCard
+            label="Maior gasto no mês"
+            value={topCategory?.categoryName ?? '—'}
+            delay={240}
+            dotColor={topCategory ? getCategoryColor(topCategory.color ?? topCategory.categoryId).dot : undefined}
+            caption={topCategory ? formatBRL(topCategory.amount) : 'Sem gastos no mês'}
+          />
+        </View>
+      )}
+
+      <CategorySpendingCard
+        period={period}
+        chartType={chartType}
+        hasFilter={hasFilter}
+        onChartTypeChange={setChartType}
+        onOpenFilter={() => setFilterVisible(true)}
+        onClearFilter={() => setPeriod(currentPeriod)}
+      />
 
       <MonthFilterDialog
         visible={filterVisible}
@@ -79,8 +92,7 @@ export default function DashboardScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 36 },
-  content: { width: '100%', maxWidth: 1120, alignSelf: 'center', gap: 24 },
+  container: { padding: 36, gap: 24 },
   subtitle: { color: customColors.textSecondary, marginTop: 4 },
   metrics: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
 });
