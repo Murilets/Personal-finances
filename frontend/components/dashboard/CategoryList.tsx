@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     height: 4,
     borderRadius: 2,
     marginHorizontal: 16,
-    backgroundColor: '#EEF0F2',
+    backgroundColor: customColors.track,
     overflow: 'hidden',
   },
   fill: { height: '100%', borderRadius: 2 },

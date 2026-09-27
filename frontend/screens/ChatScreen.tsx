@@ -52,5 +52,5 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   bubbleTextAgent: { color: customColors.text },
-  bubbleTextUser: { color: '#FFFFFF' },
+  bubbleTextUser: { color: customColors.onPrimary },
 });

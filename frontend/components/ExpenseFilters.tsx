@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Button } from 'react-native-paper';
 import CategorySelect from './CategorySelect';
 import DateInput from './DateInput';
+import { Button } from './ui';
 import { customColors } from '../constants/theme';
 import { SearchIcon, XIcon } from '../constants/icons';
 import { useDateInput } from '../hooks/useDateInput';
@@ -58,7 +58,7 @@ export default function ExpenseFilters({
     onChange({});
   };
 
-  const clearColor = hasActiveFilters ? customColors.expense : '#9CA3AF';
+  const clearColor = hasActiveFilters ? customColors.expense : customColors.textDisabled;
 
   return (
     <View style={styles.cardContainer}>
@@ -86,23 +86,18 @@ export default function ExpenseFilters({
         />
       </View>
       <Button
-        mode="contained"
         onPress={handleSearch}
-        icon={() => <SearchIcon size={16} color="#FFFFFF" />}
-        style={styles.searchButton}
-        contentStyle={styles.buttonContent}
+        icon={() => <SearchIcon size={16} color={customColors.onPrimary} />}
+        style={styles.actionButton}
       >
         Buscar
       </Button>
       <Button
-        mode="text"
+        variant="danger"
         onPress={handleClear}
         disabled={!hasActiveFilters}
-        textColor={clearColor}
-        rippleColor="rgba(239, 68, 68, 0.12)"
         icon={() => <XIcon size={16} color={clearColor} />}
-        style={[styles.clearButton, !hasActiveFilters && styles.disabledClearButton]}
-        contentStyle={styles.buttonContent}
+        style={[styles.actionButton, !hasActiveFilters && styles.disabledClearButton]}
       >
         Limpar filtros
       </Button>
@@ -112,7 +107,7 @@ export default function ExpenseFilters({
 
 const styles = StyleSheet.create({
   cardContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: customColors.surface,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: customColors.border,
@@ -131,23 +126,11 @@ const styles = StyleSheet.create({
     width: 170,
     marginTop: 6,
   },
-  searchButton: {
-    borderRadius: 8,
-    height: 40,
+  // alinha com os inputs, que têm label acima
+  actionButton: {
     marginTop: 6,
-    justifyContent: 'center',
-  },
-  clearButton: {
-    borderRadius: 8,
-    height: 40,
-    marginTop: 6,
-    justifyContent: 'center',
-    borderWidth: 0,
   },
   disabledClearButton: {
     opacity: 0.5,
-  },
-  buttonContent: {
-    height: 40,
   },
 });

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { Button, Dialog, HelperText, Portal, TextInput } from 'react-native-paper';
+import { HelperText, TextInput } from 'react-native-paper';
 import CategorySelect from './CategorySelect';
 import DateInput from './DateInput';
-import { customColors } from '../constants/theme';
+import { AppDialog, Button } from './ui';
 import { useCurrencyInput } from '../hooks/useCurrencyInput';
 import { useDateInput } from '../hooks/useDateInput';
 import { Category } from '../types/category';
@@ -64,75 +64,61 @@ export default function ExpenseFormDialog({
   };
 
   return (
-    <Portal>
-      <Dialog visible={visible} onDismiss={onDismiss} style={styles.dialog}>
-        <Dialog.Title style={styles.dialogTitle}>
-          {expense ? 'Editar despesa' : 'Nova despesa'}
-        </Dialog.Title>
-        <Dialog.Content style={styles.dialogContent}>
-          <TextInput
-            label="Valor"
-            value={currencyInput.formattedValue}
-            onChangeText={currencyInput.handleChangeText}
-            mode="outlined"
-            keyboardType="number-pad"
-            maxLength={15}
-            error={amountError}
-          />
-          {amountError && <HelperText type="error">Informe um valor maior que zero</HelperText>}
+    <AppDialog
+      visible={visible}
+      onDismiss={onDismiss}
+      title={expense ? 'Editar despesa' : 'Nova despesa'}
+      contentStyle={styles.dialogContent}
+      actions={[
+        <Button key="cancel" variant="text" onPress={onDismiss} disabled={submitting}>
+          Cancelar
+        </Button>,
+        <Button key="save" variant="text" onPress={handleSubmit} loading={submitting} disabled={submitting}>
+          Salvar
+        </Button>,
+      ]}
+    >
+      <TextInput
+        label="Valor"
+        value={currencyInput.formattedValue}
+        onChangeText={currencyInput.handleChangeText}
+        mode="outlined"
+        keyboardType="number-pad"
+        maxLength={15}
+        error={amountError}
+      />
+      {amountError && <HelperText type="error">Informe um valor maior que zero</HelperText>}
 
-          <DateInput
-            label="Data"
-            value={dateInput.displayValue}
-            onChangeText={dateInput.handleChangeText}
-            error={dateError}
-          />
-          {dateError && <HelperText type="error">Informe uma data válida (DD/MM/AAAA)</HelperText>}
+      <DateInput
+        label="Data"
+        value={dateInput.displayValue}
+        onChangeText={dateInput.handleChangeText}
+        error={dateError}
+      />
+      {dateError && <HelperText type="error">Informe uma data válida (DD/MM/AAAA)</HelperText>}
 
-          <CategorySelect
-            label="Categoria"
-            value={categoryId}
-            onChange={(val) => setCategoryId(val ?? '')}
-            categories={categories}
-            error={categoryError}
-          />
-          {categoryError && <HelperText type="error">Selecione uma categoria</HelperText>}
+      <CategorySelect
+        label="Categoria"
+        value={categoryId}
+        onChange={(val) => setCategoryId(val ?? '')}
+        categories={categories}
+        error={categoryError}
+      />
+      {categoryError && <HelperText type="error">Selecione uma categoria</HelperText>}
 
-          <TextInput
-            label="Nota (opcional)"
-            value={note}
-            onChangeText={setNote}
-            mode="outlined"
-            multiline
-          />
-          {errorMessage && <HelperText type="error">{errorMessage}</HelperText>}
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button onPress={onDismiss} disabled={submitting}>
-            Cancelar
-          </Button>
-          <Button onPress={handleSubmit} loading={submitting} disabled={submitting}>
-            Salvar
-          </Button>
-        </Dialog.Actions>
-      </Dialog>
-    </Portal>
+      <TextInput
+        label="Nota (opcional)"
+        value={note}
+        onChangeText={setNote}
+        mode="outlined"
+        multiline
+      />
+      {errorMessage && <HelperText type="error">{errorMessage}</HelperText>}
+    </AppDialog>
   );
 }
 
 const styles = StyleSheet.create({
-  dialog: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: customColors.border,
-    borderRadius: 12,
-    maxWidth: 440,
-    width: '90%',
-    alignSelf: 'center',
-  },
-  dialogTitle: {
-    color: customColors.text,
-  },
   dialogContent: {
     flexDirection: 'column',
     gap: 14,
