@@ -68,6 +68,26 @@ public class DashboardService : IDashboardService
             .ToList();
     }
 
+    public async Task<List<MonthlyTotalResponse>> GetMonthlyTrendAsync(int? year, int? month, CancellationToken ct = default)
+    {
+        // termina no mes filtrado; sem filtro ("Todos os meses") termina no mes atual
+        var anchor = ResolvePeriod(year, month) ?? CurrentMonth();
+        var start = anchor.StartUtc.AddMonths(-(TrendMonths - 1));
+
+        var totals = await _expenseRepository.GetMonthlyTotalsAsync(start, anchor.EndUtc, ct);
+
+        // preenche os meses sem despesa com 0, em ordem cronologica
+        return Enumerable.Range(0, TrendMonths)
+            .Select(i => YearMonth.FromDate(start.AddMonths(i)))
+            .Select(m => new MonthlyTotalResponse(
+                m.Year,
+                m.Month,
+                totals.FirstOrDefault(t => t.Year == m.Year && t.Month == m.Month)?.Total ?? 0m))
+            .ToList();
+    }
+
+    private const int TrendMonths = 6;
+
     private YearMonth CurrentMonth() => YearMonth.FromDate(_timeProvider.GetUtcNow().UtcDateTime);
 
     private static YearMonth? ResolvePeriod(int? year, int? month) => (year, month) switch

@@ -1,34 +1,37 @@
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import EmptyState from '../EmptyState';
 import ErrorState from '../ErrorState';
 import LoadingState from '../LoadingState';
-import CategoryBarChart from './CategoryBarChart';
 import CategoryDonutChart from './CategoryDonutChart';
-import ChartTypeToggle from './ChartTypeToggle';
+import CategoryList from './CategoryList';
+import MonthlyTrendPanel from './MonthlyTrendPanel';
+import MonthYearFilter from './MonthYearFilter';
 import { customColors } from '../../constants/theme';
-import { useCategoryBreakdown } from '../../hooks/useDashboard';
-import { ChartType, DashboardPeriod } from '../../types/dashboard';
-import { formatMonthLabel } from '../../utils/formatters';
+import { useCategoryBreakdown, useMonthlyTrend } from '../../hooks/useDashboard';
+import { MonthOption } from '../../types/dashboard';
+
+// abaixo disso as três colunas (donut | lista | tendência) viram uma pilha
+const WIDE_BREAKPOINT = 860;
 
 export default function CategorySpendingCard({
   period,
-  chartType,
-  hasFilter,
-  onChartTypeChange,
-  onOpenFilter,
-  onClearFilter,
+  years,
+  onPeriodChange,
 }: {
-  period: DashboardPeriod;
-  chartType: ChartType;
-  hasFilter: boolean;
-  onChartTypeChange: (type: ChartType) => void;
-  onOpenFilter: () => void;
-  onClearFilter: () => void;
+  period: MonthOption;
+  years: number[];
+  onPeriodChange: (period: MonthOption) => void;
 }) {
   const { breakdown, isLoading, isError, refetch } = useCategoryBreakdown(period);
+  const { trend } = useMonthlyTrend(period);
+  const [bodyWidth, setBodyWidth] = useState(0);
 
-  const filterLabel = period ? formatMonthLabel(period.year, period.month) : 'Todos os meses';
+  // mede o card (não a janela): a sidebar já ocupa parte da tela no desktop
+  const isWide = bodyWidth >= WIDE_BREAKPOINT;
+
+  const handleLayout = (e: LayoutChangeEvent) => setBodyWidth(e.nativeEvent.layout.width);
 
   const renderBody = () => {
     if (isLoading) return <LoadingState />;
@@ -38,34 +41,35 @@ export default function CategorySpendingCard({
       );
     }
     if (breakdown.total === 0) return <EmptyState message="Nenhum gasto neste período." />;
-    return chartType === 'bar' ? (
-      <CategoryBarChart items={breakdown.items} />
-    ) : (
-      <CategoryDonutChart items={breakdown.items} total={breakdown.total} />
+
+    return (
+      <View style={[styles.body, isWide ? styles.bodyWide : styles.bodyNarrow]}>
+        <View style={[styles.donut, isWide && styles.donutWide]}>
+          <CategoryDonutChart items={breakdown.items} total={breakdown.total} />
+        </View>
+
+        <View style={isWide ? styles.listWide : undefined}>
+          <CategoryList items={breakdown.items} />
+        </View>
+
+        {/* se só a tendência falhar, o card continua funcionando sem o painel */}
+        {trend && trend.length > 0 && (
+          <View style={isWide ? styles.trendWide : styles.trendNarrow}>
+            <MonthlyTrendPanel trend={trend} />
+          </View>
+        )}
+      </View>
     );
   };
 
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <View>
-          <Text style={styles.title}>Gastos por categoria</Text>
-          <Text style={styles.subtitle}>{filterLabel}</Text>
-        </View>
-        <View style={styles.actions}>
-          {hasFilter && (
-            <Pressable onPress={onClearFilter} hitSlop={8} accessibilityRole="button">
-              <Text style={styles.clearText}>Limpar filtro</Text>
-            </Pressable>
-          )}
-          <Pressable onPress={onOpenFilter} style={styles.filterButton} accessibilityRole="button">
-            <Text style={styles.filterButtonText}>Filtros</Text>
-          </Pressable>
-          <ChartTypeToggle value={chartType} onChange={onChartTypeChange} />
-        </View>
+        <Text style={styles.title}>Gastos por categoria</Text>
+        <MonthYearFilter value={period} years={years} onChange={onPeriodChange} />
       </View>
 
-      {renderBody()}
+      <View onLayout={handleLayout}>{renderBody()}</View>
     </View>
   );
 }
@@ -76,27 +80,35 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: customColors.border,
     borderRadius: 12,
-    paddingVertical: 20,
-    paddingHorizontal: 24,
+    paddingVertical: 24,
+    paddingHorizontal: 28,
   },
-  header: { marginBottom: 20, gap: 14 },
-  title: { fontSize: 16, fontWeight: '600', color: customColors.text },
-  subtitle: { fontSize: 13, color: customColors.textSecondary, marginTop: 2 },
-  actions: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 12,
+    marginBottom: 24,
   },
-  clearText: { fontSize: 13, fontWeight: '500', color: customColors.primary },
-  filterButton: {
-    paddingVertical: 7,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: customColors.border,
-    backgroundColor: customColors.surface,
+  title: { fontSize: 17, fontWeight: '700', color: customColors.text },
+  body: { gap: 28 },
+  bodyWide: { flexDirection: 'row', alignItems: 'center' },
+  bodyNarrow: { flexDirection: 'column', gap: 24 },
+  donut: { alignItems: 'center' },
+  donutWide: { width: 220 },
+  listWide: { flex: 1 },
+  trendWide: {
+    width: 260,
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    borderLeftWidth: 1,
+    borderLeftColor: customColors.border,
+    paddingLeft: 24,
   },
-  filterButtonText: { fontSize: 13, fontWeight: '500', color: customColors.text },
+  trendNarrow: {
+    borderTopWidth: 1,
+    borderTopColor: customColors.border,
+    paddingTop: 20,
+  },
 });

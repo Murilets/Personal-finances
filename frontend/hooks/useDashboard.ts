@@ -4,10 +4,12 @@ import { DashboardPeriod } from '../types/dashboard';
 
 export const DASHBOARD_KEY = ['dashboard'] as const;
 
-export function useDashboardSummary() {
+export function useDashboardSummary(period: DashboardPeriod) {
   const query = useQuery({
-    queryKey: [...DASHBOARD_KEY, 'summary'],
-    queryFn: api.getDashboardSummary,
+    // period na chave: trocar o mês dispara nova busca do resumo
+    queryKey: [...DASHBOARD_KEY, 'summary', period],
+    queryFn: () => api.getDashboardSummary(period),
+    placeholderData: keepPreviousData,
   });
 
   return {
@@ -29,6 +31,22 @@ export function useCategoryBreakdown(period: DashboardPeriod) {
 
   return {
     breakdown: query.data,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error as Error | null,
+    refetch: query.refetch,
+  };
+}
+
+export function useMonthlyTrend(period: DashboardPeriod) {
+  const query = useQuery({
+    queryKey: [...DASHBOARD_KEY, 'trend', period],
+    queryFn: () => api.getDashboardTrend(period),
+    placeholderData: keepPreviousData,
+  });
+
+  return {
+    trend: query.data,
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error as Error | null,

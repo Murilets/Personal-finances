@@ -5,6 +5,7 @@ import {
   CategoryBreakdown,
   DashboardPeriod,
   DashboardSummary,
+  MonthlyTotal,
   MonthOption,
 } from '../types/dashboard';
 import {
@@ -102,8 +103,9 @@ export async function deleteExpense(id: string): Promise<void> {
 
 // Dashboard
 
-export async function getDashboardSummary(): Promise<DashboardSummary> {
-  const { data } = await client.get<DashboardSummary>('/api/dashboard/summary');
+export async function getDashboardSummary(period: DashboardPeriod): Promise<DashboardSummary> {
+  const params = period ? { year: period.year, month: period.month } : undefined;
+  const { data } = await client.get<DashboardSummary>('/api/dashboard/summary', { params });
   return data;
 }
 
@@ -116,5 +118,12 @@ export async function getDashboardByCategory(period: DashboardPeriod): Promise<C
 
 export async function getDashboardMonths(): Promise<MonthOption[]> {
   const { data } = await client.get<MonthOption[]>('/api/dashboard/months');
+  return data;
+}
+
+// últimos 6 meses terminando no período (null = terminando no mês atual)
+export async function getDashboardTrend(period: DashboardPeriod): Promise<MonthlyTotal[]> {
+  const params = period ? { year: period.year, month: period.month } : undefined;
+  const { data } = await client.get<MonthlyTotal[]>('/api/dashboard/trend', { params });
   return data;
 }
