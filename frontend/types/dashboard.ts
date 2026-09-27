@@ -34,7 +34,11 @@ export interface MonthOption {
   month: number;
 }
 
+export interface MonthlyTotal {
+  year: number;
+  month: number;
+  total: number;
+}
+
 // null = "Todos os meses"
 export type DashboardPeriod = MonthOption | null;
-
-export type ChartType = 'bar' | 'pie';

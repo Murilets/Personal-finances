@@ -26,4 +26,8 @@ public class DashboardController : ControllerBase
     [HttpGet("months")]
     public async Task<ActionResult<List<MonthOptionResponse>>> GetAvailableMonths(CancellationToken ct)
         => Ok(await _dashboardService.GetAvailableMonthsAsync(ct));
+
+    [HttpGet("trend")]
+    public async Task<ActionResult<List<MonthlyTotalResponse>>> GetMonthlyTrend([FromQuery] int? year, [FromQuery] int? month, CancellationToken ct)
+        => Ok(await _dashboardService.GetMonthlyTrendAsync(year, month, ct));
 }

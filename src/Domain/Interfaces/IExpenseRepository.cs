@@ -15,4 +15,5 @@ public interface IExpenseRepository
     Task DeleteAsync(Expense expense, CancellationToken cancellationToken = default);
     Task<List<CategoryTotal>> GetTotalsByCategoryAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default);
     Task<List<YearMonth>> GetMonthsWithExpensesAsync(CancellationToken cancellationToken = default);
+    Task<List<MonthlyTotal>> GetMonthlyTotalsAsync(DateTime startUtc, DateTime endUtc, CancellationToken cancellationToken = default);
 }
