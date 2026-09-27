@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoMarkText: { color: '#FFFFFF', fontWeight: '700', fontSize: 15 },
+  logoMarkText: { color: customColors.onPrimary, fontWeight: '700', fontSize: 15 },
   logoText: { fontWeight: '600', fontSize: 16, color: customColors.primary },
   nav: { gap: 2 },
   navItem: {
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 8,
   },
-  navItemActive: { backgroundColor: '#E1F5EE' },
+  navItemActive: { backgroundColor: customColors.primarySoft },
   navItemText: { fontSize: 14, fontWeight: '500', color: customColors.textSecondary },
   navItemTextActive: { color: customColors.primary },
 });

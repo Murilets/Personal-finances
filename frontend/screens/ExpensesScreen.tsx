@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
-import { Button, Dialog, Portal, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import EmptyState from '../components/EmptyState';
 import ErrorState from '../components/ErrorState';
 import ExpenseFilters from '../components/ExpenseFilters';
@@ -9,6 +9,7 @@ import ExpenseListItem from '../components/ExpenseListItem';
 import ExpenseTable, { SortDir, SortKey } from '../components/ExpenseTable';
 import LoadingState from '../components/LoadingState';
 import Pagination from '../components/Pagination';
+import { Button, ConfirmDialog } from '../components/ui';
 import { customColors } from '../constants/theme';
 import { useSnackbar } from '../context/SnackbarContext';
 import { useCategories } from '../hooks/useCategories';
@@ -150,7 +151,7 @@ export default function ExpensesScreen() {
 
       <View style={styles.topRow}>
         <ExpenseFilters categories={categories} filters={filters} onChange={handleFiltersChange} />
-        <Button mode="contained" onPress={openCreate} style={styles.createButton}>
+        <Button onPress={openCreate}>
           + Nova despesa
         </Button>
       </View>
@@ -208,27 +209,14 @@ export default function ExpensesScreen() {
         errorMessage={mutationError}
       />
 
-      <Portal>
-        <Dialog visible={!!deleteTarget} onDismiss={() => setDeleteTarget(null)} style={styles.dialog}>
-          <Dialog.Title style={styles.dialogTitle}>Excluir despesa</Dialog.Title>
-          <Dialog.Content>
-            <Text>Tem certeza que deseja excluir essa despesa? Essa ação não pode ser desfeita.</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setDeleteTarget(null)} disabled={remove.isPending}>
-              Cancelar
-            </Button>
-            <Button
-              onPress={confirmDelete}
-              loading={remove.isPending}
-              disabled={remove.isPending}
-              textColor={customColors.expense}
-            >
-              Excluir
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <ConfirmDialog
+        visible={!!deleteTarget}
+        title="Excluir despesa"
+        message="Tem certeza que deseja excluir essa despesa? Essa ação não pode ser desfeita."
+        loading={remove.isPending}
+        onConfirm={confirmDelete}
+        onDismiss={() => setDeleteTarget(null)}
+      />
     </ScrollView>
   );
 }
@@ -244,22 +232,5 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 12,
   },
-  createButton: {
-    borderRadius: 6,
-    height: 40,
-    justifyContent: 'center',
-  },
   list: { gap: 10 },
-  dialog: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: customColors.border,
-    borderRadius: 12,
-    maxWidth: 440,
-    width: '90%',
-    alignSelf: 'center',
-  },
-  dialogTitle: {
-    color: '#000000',
-  },
 });
