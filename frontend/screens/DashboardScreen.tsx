@@ -3,35 +3,28 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import CategorySpendingCard from '../components/dashboard/CategorySpendingCard';
 import MetricCard from '../components/dashboard/MetricCard';
-import MonthFilterDialog from '../components/dashboard/MonthFilterDialog';
 import ErrorState from '../components/ErrorState';
 import LoadingState from '../components/LoadingState';
 import { getCategoryColor } from '../constants/categoryColors';
 import { customColors } from '../constants/theme';
 import { useDashboardMonths, useDashboardSummary } from '../hooks/useDashboard';
-import { ChartType, DashboardPeriod } from '../types/dashboard';
-import { formatBRL, formatMonthLabel, getCurrentPeriod, isSamePeriod } from '../utils/formatters';
+import { MonthOption } from '../types/dashboard';
+import { formatBRL, formatMonthLabel, getCurrentPeriod } from '../utils/formatters';
 
 export default function DashboardScreen() {
-  const { summary, isLoading, isError, refetch } = useDashboardSummary();
+  // sem filtro = mês atual do ano atual
+  const [period, setPeriod] = useState<MonthOption>(getCurrentPeriod);
+
+  const { summary, isLoading, isError, refetch } = useDashboardSummary(period);
   const { months } = useDashboardMonths();
 
-  const [chartType, setChartType] = useState<ChartType>('bar');
-  const [period, setPeriod] = useState<DashboardPeriod>(getCurrentPeriod);
-  const [filterVisible, setFilterVisible] = useState(false);
+  // anos com despesas + o ano atual (caso a lista ainda não tenha carregado), do mais recente
+  const years = [...new Set([getCurrentPeriod().year, ...months.map((m) => m.year)])].sort(
+    (a, b) => b - a,
+  );
 
-  const currentPeriod = getCurrentPeriod();
-  const hasFilter = !isSamePeriod(period, currentPeriod);
-  const monthLabel = summary
-    ? formatMonthLabel(summary.year, summary.month)
-    : formatMonthLabel(currentPeriod.year, currentPeriod.month);
-
+  const monthLabel = formatMonthLabel(period.year, period.month);
   const topCategory = summary?.topCategory ?? null;
-
-  const handleApplyFilter = (next: DashboardPeriod) => {
-    setPeriod(next);
-    setFilterVisible(false);
-  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -71,22 +64,7 @@ export default function DashboardScreen() {
         </View>
       )}
 
-      <CategorySpendingCard
-        period={period}
-        chartType={chartType}
-        hasFilter={hasFilter}
-        onChartTypeChange={setChartType}
-        onOpenFilter={() => setFilterVisible(true)}
-        onClearFilter={() => setPeriod(currentPeriod)}
-      />
-
-      <MonthFilterDialog
-        visible={filterVisible}
-        months={months}
-        value={period}
-        onApply={handleApplyFilter}
-        onDismiss={() => setFilterVisible(false)}
-      />
+      <CategorySpendingCard period={period} years={years} onPeriodChange={setPeriod} />
     </ScrollView>
   );
 }

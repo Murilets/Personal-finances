@@ -10,3 +10,5 @@ public record CategoryBreakdownResponse(int? Year, int? Month, decimal Total, Li
 public record CategorySpendingResponse(Guid CategoryId, string Name, decimal Amount, decimal Percentage, string? Color = null);
 
 public record MonthOptionResponse(int Year, int Month);
+
+public record MonthlyTotalResponse(int Year, int Month, decimal Total);

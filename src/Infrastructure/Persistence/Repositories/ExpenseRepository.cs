@@ -99,4 +99,14 @@ public class ExpenseRepository : IExpenseRepository
         .ToListAsync(cancellationToken);
         return months.Select(m => YearMonth.Create(m.Year, m.Month)).ToList();
     }
+    public async Task<List<MonthlyTotal>> GetMonthlyTotalsAsync(DateTime startUtc, DateTime endUtc, CancellationToken cancellationToken = default)
+    {
+        // intervalo semiaberto [startUtc, endUtc), igual ao GetTotalsByCategoryAsync
+        // meses sem despesa nao aparecem aqui; o service preenche com 0
+        return await _context.Expenses.AsNoTracking()
+        .Where(e => e.Date >= startUtc && e.Date < endUtc)
+        .GroupBy(e => new { e.Date.Year, e.Date.Month })
+        .Select(g => new MonthlyTotal(g.Key.Year, g.Key.Month, g.Sum(e => e.Amount)))
+        .ToListAsync(cancellationToken);
+    }
 }
