@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { Button, Dialog, Portal, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import CategoryCard from '../components/CategoryCard';
 import CategoryFormDialog, { CategoryFormValues } from '../components/CategoryFormDialog';
 import EmptyState from '../components/EmptyState';
 import ErrorState from '../components/ErrorState';
 import LoadingState from '../components/LoadingState';
+import { Button, ConfirmDialog } from '../components/ui';
 import { ApiError } from '../services/api';
 import { customColors } from '../constants/theme';
 import { useSnackbar } from '../context/SnackbarContext';
@@ -97,7 +98,7 @@ export default function CategoriesScreen() {
           <Text variant="headlineSmall">Categorias</Text>
           <Text style={styles.subtitle}>Organize seus gastos por tipo</Text>
         </View>
-        <Button mode="contained" onPress={openCreate}>
+        <Button onPress={openCreate}>
           + Nova categoria
         </Button>
       </View>
@@ -130,30 +131,14 @@ export default function CategoriesScreen() {
         errorMessage={mutationError}
       />
 
-      <Portal>
-        <Dialog visible={!!deleteTarget} onDismiss={() => setDeleteTarget(null)} style={styles.dialog}>
-          <Dialog.Title style={styles.dialogTitle}>Excluir categoria</Dialog.Title>
-          <Dialog.Content>
-            <Text>
-              Tem certeza que deseja excluir "{deleteTarget?.name}"? Essa ação não pode ser
-              desfeita.
-            </Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setDeleteTarget(null)} disabled={remove.isPending}>
-              Cancelar
-            </Button>
-            <Button
-              onPress={confirmDelete}
-              loading={remove.isPending}
-              disabled={remove.isPending}
-              textColor={customColors.expense}
-            >
-              Excluir
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+      <ConfirmDialog
+        visible={!!deleteTarget}
+        title="Excluir categoria"
+        message={`Tem certeza que deseja excluir "${deleteTarget?.name}"? Essa ação não pode ser desfeita.`}
+        loading={remove.isPending}
+        onConfirm={confirmDelete}
+        onDismiss={() => setDeleteTarget(null)}
+      />
     </ScrollView>
   );
 }
@@ -170,16 +155,4 @@ const styles = StyleSheet.create({
   },
   subtitle: { color: customColors.textSecondary, marginTop: 4 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 14 },
-  dialog: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: customColors.border,
-    borderRadius: 12,
-    maxWidth: 440,
-    width: '90%',
-    alignSelf: 'center',
-  },
-  dialogTitle: {
-    color: '#000000',
-  },
 });
