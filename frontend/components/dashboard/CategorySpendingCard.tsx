@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
-import EmptyState from '../EmptyState';
 import ErrorState from '../ErrorState';
 import LoadingState from '../LoadingState';
 import CategoryDonutChart from './CategoryDonutChart';
@@ -9,13 +8,14 @@ import CategoryList from './CategoryList';
 import MonthlyTrendPanel from './MonthlyTrendPanel';
 import MonthYearFilter from './MonthYearFilter';
 import { customColors } from '../../constants/theme';
+import { useCategories } from '../../hooks/useCategories';
 import { useCategoryBreakdown, useMonthlyTrend } from '../../hooks/useDashboard';
-import { MonthOption } from '../../types/dashboard';
+import { CategorySpending, MonthOption } from '../../types/dashboard';
 
 // abaixo disso as três colunas (donut | lista | tendência) viram uma pilha
 const WIDE_BREAKPOINT = 860;
 
-export default function CategorySpendingCard({
+function CategorySpendingCard({
   period,
   years,
   onPeriodChange,
@@ -26,6 +26,19 @@ export default function CategorySpendingCard({
 }) {
   const { breakdown, isLoading, isError, refetch } = useCategoryBreakdown(period);
   const { trend } = useMonthlyTrend(period);
+  const { categories } = useCategories();
+  // referência estável: senão o donut reinicia a animação a cada render do card
+  const zeroedItems = useMemo<CategorySpending[]>(
+    () =>
+      categories.map((c) => ({
+        categoryId: c.id,
+        name: c.name,
+        amount: 0,
+        percentage: 0,
+        color: c.color,
+      })),
+    [categories],
+  );
   const [bodyWidth, setBodyWidth] = useState(0);
 
   // mede o card (não a janela): a sidebar já ocupa parte da tela no desktop
@@ -40,16 +53,18 @@ export default function CategorySpendingCard({
         <ErrorState message="Não foi possível carregar os gastos por categoria." onRetry={refetch} />
       );
     }
-    if (breakdown.total === 0) return <EmptyState message="Nenhum gasto neste período." />;
+
+    // sem gastos no período o backend não devolve itens; mostra as categorias zeradas
+    const items = breakdown.total === 0 ? zeroedItems : breakdown.items;
 
     return (
       <View style={[styles.body, isWide ? styles.bodyWide : styles.bodyNarrow]}>
         <View style={[styles.donut, isWide && styles.donutWide]}>
-          <CategoryDonutChart items={breakdown.items} total={breakdown.total} />
+          <CategoryDonutChart items={items} total={breakdown.total} />
         </View>
 
         <View style={isWide ? styles.listWide : undefined}>
-          <CategoryList items={breakdown.items} />
+          <CategoryList items={items} />
         </View>
 
         {/* se só a tendência falhar, o card continua funcionando sem o painel */}
@@ -73,6 +88,8 @@ export default function CategorySpendingCard({
     </View>
   );
 }
+
+export default memo(CategorySpendingCard);
 
 const styles = StyleSheet.create({
   card: {

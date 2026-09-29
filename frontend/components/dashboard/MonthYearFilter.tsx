@@ -1,3 +1,4 @@
+import { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Dropdown } from '../ui';
 import { MonthOption } from '../../types/dashboard';
@@ -5,7 +6,7 @@ import { MONTH_NAMES } from '../../utils/formatters';
 
 const MONTH_OPTIONS = MONTH_NAMES.map((label, index) => ({ value: index + 1, label }));
 
-export default function MonthYearFilter({
+function MonthYearFilter({
   value,
   years,
   onChange,
@@ -14,7 +15,10 @@ export default function MonthYearFilter({
   years: number[];
   onChange: (period: MonthOption) => void;
 }) {
-  const yearOptions = years.map((year) => ({ value: year, label: String(year) }));
+  const yearOptions = useMemo(
+    () => years.map((year) => ({ value: year, label: String(year) })),
+    [years],
+  );
 
   // trocar o mês mantém o ano e vice-versa
   return (
@@ -35,6 +39,8 @@ export default function MonthYearFilter({
     </View>
   );
 }
+
+export default memo(MonthYearFilter);
 
 const styles = StyleSheet.create({
   container: { flexDirection: 'row', alignItems: 'center', gap: 8 },
