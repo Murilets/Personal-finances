@@ -13,12 +13,21 @@ import { useSnackbar } from '../context/SnackbarContext';
 import { useCategories } from '../hooks/useCategories';
 import { Category } from '../types/category';
 
+const GRID_GAP = 14;
+const CARD_MIN_WIDTH = 220;
+
 export default function CategoriesScreen() {
   const { categories, isLoading, isError, refetch, create, update, remove } = useCategories();
   const { showSuccess, showError } = useSnackbar();
   const [formVisible, setFormVisible] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
+
+  // largura fixa por card: o último da fila não se estica para preencher a linha
+  const [gridWidth, setGridWidth] = useState(0);
+  const columns = Math.max(1, Math.floor((gridWidth + GRID_GAP) / (CARD_MIN_WIDTH + GRID_GAP)));
+  const cardWidth =
+    gridWidth > 0 ? (gridWidth - GRID_GAP * (columns - 1)) / columns : undefined;
 
   const mutationError =
     (create.error as ApiError | null)?.message ??
@@ -109,10 +118,11 @@ export default function CategoriesScreen() {
         <EmptyState message="Nenhuma categoria cadastrada ainda." />
       )}
       {!isLoading && !isError && categories.length > 0 && (
-        <View style={styles.grid}>
+        <View style={styles.grid} onLayout={(e) => setGridWidth(e.nativeEvent.layout.width)}>
           {categories.map((category) => (
             <CategoryCard
               key={category.id}
+              width={cardWidth}
               category={category}
               onEdit={() => openEdit(category)}
               onDelete={() => setDeleteTarget(category)}
@@ -154,5 +164,5 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   subtitle: { color: customColors.textSecondary, marginTop: 4 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 14 },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: GRID_GAP },
 });

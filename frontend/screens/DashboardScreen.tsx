@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import CategorySpendingCard from '../components/dashboard/CategorySpendingCard';
@@ -19,8 +19,11 @@ export default function DashboardScreen() {
   const { months } = useDashboardMonths();
 
   // anos com despesas + o ano atual (caso a lista ainda não tenha carregado), do mais recente
-  const years = [...new Set([getCurrentPeriod().year, ...months.map((m) => m.year)])].sort(
-    (a, b) => b - a,
+  // memoizado: referência estável para o memo do card e do filtro funcionar
+  const years = useMemo(
+    () =>
+      [...new Set([getCurrentPeriod().year, ...months.map((m) => m.year)])].sort((a, b) => b - a),
+    [months],
   );
 
   const monthLabel = formatMonthLabel(period.year, period.month);

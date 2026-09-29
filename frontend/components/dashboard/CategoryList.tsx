@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { getCategoryColor } from '../../constants/categoryColors';
@@ -6,7 +6,7 @@ import { customColors } from '../../constants/theme';
 import { CategorySpending } from '../../types/dashboard';
 import { formatBRL } from '../../utils/formatters';
 
-function CategoryRow({
+const CategoryRow = memo(function CategoryRow({
   item,
   index,
   isLast,
@@ -54,9 +54,9 @@ function CategoryRow({
       <Text style={styles.percent}>{Math.round(item.percentage)}%</Text>
     </View>
   );
-}
+});
 
-export default function CategoryList({ items }: { items: CategorySpending[] }) {
+function CategoryList({ items }: { items: CategorySpending[] }) {
   return (
     <View>
       {items.map((item, index) => (
@@ -70,6 +70,8 @@ export default function CategoryList({ items }: { items: CategorySpending[] }) {
     </View>
   );
 }
+
+export default memo(CategoryList);
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 9 },

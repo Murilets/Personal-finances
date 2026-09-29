@@ -1,9 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import * as api from '../services/api';
-import { CreateCategoryRequest, UpdateCategoryRequest } from '../types/category';
+import { Category, CreateCategoryRequest, UpdateCategoryRequest } from '../types/category';
 import { DASHBOARD_KEY } from './useDashboard';
 
 const CATEGORIES_KEY = ['categories'];
+
+// referência estável enquanto a query carrega
+const NO_CATEGORIES: Category[] = [];
 
 export function useCategories() {
   const queryClient = useQueryClient();
@@ -37,7 +40,7 @@ export function useCategories() {
   });
 
   return {
-    categories: query.data ?? [],
+    categories: query.data ?? NO_CATEGORIES,
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error as Error | null,

@@ -1,9 +1,10 @@
+import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { customColors } from '../../constants/theme';
 import AnimatedNumber from './AnimatedNumber';
 
-export default function MetricCard({
+function MetricCard({
   label,
   value,
   numericValue,
@@ -38,6 +39,8 @@ export default function MetricCard({
     </View>
   );
 }
+
+export default memo(MetricCard);
 
 const styles = StyleSheet.create({
   card: {
