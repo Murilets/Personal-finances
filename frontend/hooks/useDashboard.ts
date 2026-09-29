@@ -1,8 +1,11 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import * as api from '../services/api';
-import { DashboardPeriod } from '../types/dashboard';
+import { DashboardPeriod, MonthOption } from '../types/dashboard';
 
 export const DASHBOARD_KEY = ['dashboard'] as const;
+
+// referência estável enquanto a query carrega (um [] novo a cada render quebraria os useMemo/memo)
+const NO_MONTHS: MonthOption[] = [];
 
 export function useDashboardSummary(period: DashboardPeriod) {
   const query = useQuery({
@@ -61,7 +64,7 @@ export function useDashboardMonths() {
   });
 
   return {
-    months: query.data ?? [],
+    months: query.data ?? NO_MONTHS,
     isLoading: query.isLoading,
     isError: query.isError,
   };

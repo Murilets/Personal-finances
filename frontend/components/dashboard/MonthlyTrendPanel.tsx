@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import Svg, { Circle, Path, Polygon, Polyline } from 'react-native-svg';
@@ -33,10 +33,22 @@ function buildPoints(trend: MonthlyTotal[], width: number) {
   }));
 }
 
-export default function MonthlyTrendPanel({ trend }: { trend: MonthlyTotal[] }) {
+function MonthlyTrendPanel({ trend }: { trend: MonthlyTotal[] }) {
   const [width, setWidth] = useState(DEFAULT_WIDTH);
 
-  if (trend.length === 0) return null;
+  // hooks antes do early return (regras de hooks)
+  const chart = useMemo(() => {
+    if (trend.length === 0) return null;
+    const points = buildPoints(trend, width);
+    const line = points.map((p) => `${p.x},${p.y}`).join(' ');
+    const first = points[0];
+    const last = points[points.length - 1];
+    // área = linha + dois cantos inferiores para fechar o polígono
+    return { line, last, area: `${line} ${last.x},${CHART_HEIGHT} ${first.x},${CHART_HEIGHT}` };
+  }, [trend, width]);
+
+  if (!chart) return null;
+  const { line, last, area } = chart;
 
   const change = getChange(trend);
   const prevMonth = trend.length >= 2 ? formatMonthName(trend[trend.length - 2].month) : null;
@@ -47,13 +59,6 @@ export default function MonthlyTrendPanel({ trend }: { trend: MonthlyTotal[] }) 
     : isUp
       ? customColors.expense
       : customColors.positive;
-
-  const points = buildPoints(trend, width);
-  const line = points.map((p) => `${p.x},${p.y}`).join(' ');
-  const first = points[0];
-  const last = points[points.length - 1];
-  // área = linha + dois cantos inferiores para fechar o polígono
-  const area = `${line} ${last.x},${CHART_HEIGHT} ${first.x},${CHART_HEIGHT}`;
 
   const handleLayout = (e: LayoutChangeEvent) => {
     const measured = Math.round(e.nativeEvent.layout.width);
@@ -124,6 +129,8 @@ export default function MonthlyTrendPanel({ trend }: { trend: MonthlyTotal[] }) 
     </View>
   );
 }
+
+export default memo(MonthlyTrendPanel);
 
 const styles = StyleSheet.create({
   title: { fontSize: 12, fontWeight: '600', color: customColors.textSecondary },

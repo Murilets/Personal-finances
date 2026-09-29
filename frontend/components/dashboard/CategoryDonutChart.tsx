@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import Svg, { Circle, G } from 'react-native-svg';
@@ -37,7 +37,7 @@ function buildArcs(items: CategorySpending[], total: number): Arc[] {
   return arcs;
 }
 
-export default function CategoryDonutChart({
+function CategoryDonutChart({
   items,
   total,
 }: {
@@ -45,7 +45,8 @@ export default function CategoryDonutChart({
   total: number;
 }) {
   const [progress, setProgress] = useState(0);
-  const arcs = buildArcs(items, total);
+  // a animação re-renderiza a cada frame; os arcos só mudam com os dados
+  const arcs = useMemo(() => buildArcs(items, total), [items, total]);
 
   useEffect(() => {
     setProgress(0);
@@ -83,6 +84,15 @@ export default function CategoryDonutChart({
       <Svg width={DONUT_SIZE} height={DONUT_SIZE}>
         {/* gira -90° para o primeiro arco começar no topo */}
         <G transform={`rotate(-90 ${CENTER} ${CENTER})`}>
+          {/* anel de fundo: é o que aparece quando não há gastos */}
+          <Circle
+            cx={CENTER}
+            cy={CENTER}
+            r={RADIUS}
+            fill="none"
+            stroke={customColors.track}
+            strokeWidth={STROKE}
+          />
           {arcs.map((arc) => {
             // Calcula o comprimento visível do arco com base no progresso geral em 360°
             let visibleLength = 0;
@@ -113,6 +123,8 @@ export default function CategoryDonutChart({
     </View>
   );
 }
+
+export default memo(CategoryDonutChart);
 
 const styles = StyleSheet.create({
   chart: { width: DONUT_SIZE, height: DONUT_SIZE },
