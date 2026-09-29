@@ -1,3 +1,4 @@
+import { DollarSign } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { customColors } from '../../constants/theme';
@@ -13,7 +14,7 @@ export default function Sidebar() {
     <View style={styles.sidebar}>
       <View style={styles.logo}>
         <View style={styles.logoMark}>
-          <Text style={styles.logoMarkText}>$</Text>
+          <DollarSign size={18} color={customColors.onPrimary} strokeWidth={2.5} />
         </View>
         <Text style={styles.logoText}>FinChat</Text>
       </View>
@@ -61,7 +62,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoMarkText: { color: customColors.onPrimary, fontWeight: '700', fontSize: 15 },
   logoText: { fontWeight: '600', fontSize: 16, color: customColors.primary },
   nav: { gap: 2 },
   navItem: {
