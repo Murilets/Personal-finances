@@ -9,15 +9,17 @@ export default function CategoryCard({
   category,
   onEdit,
   onDelete,
+  width,
 }: {
   category: Category;
   onEdit: () => void;
   onDelete: () => void;
+  width?: number;
 }) {
   const color = getCategoryColor(category);
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, width ? { width } : undefined]}>
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <View style={[styles.dot, { backgroundColor: color.dot }]} />
@@ -32,7 +34,9 @@ export default function CategoryCard({
           </Pressable>
         </View>
       </View>
-      {category.description && <Text style={styles.description}>{category.description}</Text>}
+      {category.description && (
+        <Text style={styles.description} numberOfLines={2}>{category.description}</Text>
+      )}
     </View>
   );
 }
@@ -45,8 +49,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     minWidth: 220,
-    flexGrow: 1,
-    flexBasis: 220,
+    // altura fixa (cabe título + descrição em até 2 linhas) para todos os cards ficarem iguais
+    height: 96,
   },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 },
