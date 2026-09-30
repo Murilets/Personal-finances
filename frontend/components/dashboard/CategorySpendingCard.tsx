@@ -7,7 +7,7 @@ import CategoryDonutChart from './CategoryDonutChart';
 import CategoryList from './CategoryList';
 import MonthlyTrendPanel from './MonthlyTrendPanel';
 import MonthYearFilter from './MonthYearFilter';
-import { customColors } from '../../constants/theme';
+import { makeStyles } from '../../context/ThemeContext';
 import { useCategories } from '../../hooks/useCategories';
 import { useCategoryBreakdown, useMonthlyTrend } from '../../hooks/useDashboard';
 import { CategorySpending, MonthOption } from '../../types/dashboard';
@@ -24,6 +24,7 @@ function CategorySpendingCard({
   years: number[];
   onPeriodChange: (period: MonthOption) => void;
 }) {
+  const styles = useStyles();
   const { breakdown, isLoading, isError, refetch } = useCategoryBreakdown(period);
   const { trend } = useMonthlyTrend(period);
   const { categories } = useCategories();
@@ -91,11 +92,12 @@ function CategorySpendingCard({
 
 export default memo(CategorySpendingCard);
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   card: {
-    backgroundColor: customColors.surface,
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: customColors.border,
+    borderColor: c.border,
     borderRadius: 12,
     paddingVertical: 24,
     paddingHorizontal: 28,
@@ -108,7 +110,7 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 24,
   },
-  title: { fontSize: 17, fontWeight: '700', color: customColors.text },
+  title: { fontSize: 17, fontWeight: '700', color: c.text },
   body: { gap: 28 },
   bodyWide: { flexDirection: 'row', alignItems: 'center' },
   bodyNarrow: { flexDirection: 'column', gap: 24 },
@@ -120,12 +122,12 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     justifyContent: 'center',
     borderLeftWidth: 1,
-    borderLeftColor: customColors.border,
+    borderLeftColor: c.border,
     paddingLeft: 24,
   },
   trendNarrow: {
     borderTopWidth: 1,
-    borderTopColor: customColors.border,
+    borderTopColor: c.border,
     paddingTop: 20,
   },
-});
+}));

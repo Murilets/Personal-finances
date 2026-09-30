@@ -1,8 +1,9 @@
 import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
-import { customColors } from '../constants/theme';
+import { makeStyles } from '../context/ThemeContext';
 
 export default function EmptyState({ message }: { message: string }) {
+  const styles = useStyles();
   return (
     <View style={styles.container}>
       <Text style={styles.message}>{message}</Text>
@@ -10,7 +11,8 @@ export default function EmptyState({ message }: { message: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   container: { padding: 40, alignItems: 'center' },
-  message: { color: customColors.textSecondary },
-});
+  message: { color: c.textSecondary },
+}));

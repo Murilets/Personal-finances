@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { Button as PaperButton, ButtonProps as PaperButtonProps } from 'react-native-paper';
-import { customColors } from '../../constants/theme';
+import { makeStyles, useAppTheme } from '../../context/ThemeContext';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'text' | 'danger';
 
@@ -33,6 +33,8 @@ export default function Button({
   disabled,
   style,
 }: ButtonProps) {
+  const styles = useStyles();
+  const { colors } = useAppTheme();
   const isDanger = variant === 'danger';
 
   return (
@@ -42,8 +44,8 @@ export default function Button({
       icon={icon}
       loading={loading}
       disabled={disabled}
-      textColor={isDanger ? customColors.expense : undefined}
-      rippleColor={isDanger ? customColors.expenseSoft : undefined}
+      textColor={isDanger ? colors.expense : undefined}
+      rippleColor={isDanger ? colors.expenseSoft : undefined}
       style={[styles.button, variant === 'secondary' && styles.secondary, style]}
       contentStyle={styles.content}
     >
@@ -52,8 +54,9 @@ export default function Button({
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   button: { borderRadius: 8, justifyContent: 'center' },
-  secondary: { borderColor: customColors.border },
+  secondary: { borderColor: c.border },
   content: { height: 40 },
-});
+}));

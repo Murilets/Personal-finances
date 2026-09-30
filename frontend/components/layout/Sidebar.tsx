@@ -1,12 +1,15 @@
 import { DollarSign } from 'lucide-react-native';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { Text } from 'react-native-paper';
-import { customColors } from '../../constants/theme';
+import { makeStyles, useAppTheme } from '../../context/ThemeContext';
 import { useNavItems } from '../../hooks/useNavItems';
 import { useActiveRoute } from '../../navigation/ActiveRouteContext';
 import { navigate } from '../../navigation/navigationRef';
+import SidebarFooter from './SidebarFooter';
 
 export default function Sidebar() {
+  const styles = useStyles();
+  const { colors } = useAppTheme();
   const activeRoute = useActiveRoute();
   const navItems = useNavItems();
 
@@ -14,7 +17,7 @@ export default function Sidebar() {
     <View style={styles.sidebar}>
       <View style={styles.logo}>
         <View style={styles.logoMark}>
-          <DollarSign size={18} color={customColors.onPrimary} strokeWidth={2.5} />
+          <DollarSign size={18} color={colors.onPrimary} strokeWidth={2.5} />
         </View>
         <Text style={styles.logoText}>FinChat</Text>
       </View>
@@ -28,22 +31,24 @@ export default function Sidebar() {
               onPress={() => navigate(route)}
               style={[styles.navItem, active && styles.navItemActive]}
             >
-              <Icon size={18} color={active ? customColors.primary : customColors.textSecondary} />
+              <Icon size={18} color={active ? colors.primary : colors.textSecondary} />
               <Text style={[styles.navItemText, active && styles.navItemTextActive]}>{label}</Text>
             </Pressable>
           );
         })}
       </View>
+
+      <SidebarFooter />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((c) => ({
   sidebar: {
     width: 240,
-    backgroundColor: customColors.surface,
+    backgroundColor: c.surface,
     borderRightWidth: 1,
-    borderRightColor: customColors.border,
+    borderRightColor: c.border,
     paddingVertical: 20,
     paddingHorizontal: 12,
   },
@@ -58,11 +63,11 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 9,
-    backgroundColor: customColors.primary,
+    backgroundColor: c.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoText: { fontWeight: '600', fontSize: 16, color: customColors.primary },
+  logoText: { fontWeight: '600', fontSize: 16, color: c.primary },
   nav: { gap: 2 },
   navItem: {
     flexDirection: 'row',
@@ -72,7 +77,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 8,
   },
-  navItemActive: { backgroundColor: customColors.primarySoft },
-  navItemText: { fontSize: 14, fontWeight: '500', color: customColors.textSecondary },
-  navItemTextActive: { color: customColors.primary },
-});
+  navItemActive: { backgroundColor: c.primarySoft },
+  navItemText: { fontSize: 14, fontWeight: '500', color: c.textSecondary },
+  navItemTextActive: { color: c.primary },
+}));

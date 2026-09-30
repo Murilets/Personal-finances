@@ -8,7 +8,7 @@ import ErrorState from '../components/ErrorState';
 import LoadingState from '../components/LoadingState';
 import { Button, ConfirmDialog } from '../components/ui';
 import { ApiError } from '../services/api';
-import { customColors } from '../constants/theme';
+import { makeStyles } from '../context/ThemeContext';
 import { useSnackbar } from '../context/SnackbarContext';
 import { useCategories } from '../hooks/useCategories';
 import { Category } from '../types/category';
@@ -17,6 +17,7 @@ const GRID_GAP = 14;
 const CARD_MIN_WIDTH = 220;
 
 export default function CategoriesScreen() {
+  const styles = useStyles();
   const { categories, isLoading, isError, refetch, create, update, remove } = useCategories();
   const { showSuccess, showError } = useSnackbar();
   const [formVisible, setFormVisible] = useState(false);
@@ -153,7 +154,8 @@ export default function CategoriesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   container: { padding: 36 },
   topRow: {
     flexDirection: 'row',
@@ -163,6 +165,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 12,
   },
-  subtitle: { color: customColors.textSecondary, marginTop: 4 },
+  subtitle: { color: c.textSecondary, marginTop: 4 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: GRID_GAP },
-});
+}));

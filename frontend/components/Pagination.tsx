@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { Button, Menu, Text } from 'react-native-paper';
 import { useState } from 'react';
-import { customColors } from '../constants/theme';
+import { makeStyles } from '../context/ThemeContext';
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50];
 
@@ -18,6 +18,7 @@ export default function Pagination({
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
 }) {
+  const styles = useStyles();
   const [menuOpen, setMenuOpen] = useState(false);
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
@@ -66,7 +67,8 @@ export default function Pagination({
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -76,7 +78,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 12,
   },
-  info: { fontSize: 13, color: customColors.textSecondary },
+  info: { fontSize: 13, color: c.textSecondary },
   controls: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  label: { fontSize: 13, color: customColors.textSecondary },
-});
+  label: { fontSize: 13, color: c.textSecondary },
+}));

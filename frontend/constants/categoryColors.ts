@@ -44,7 +44,7 @@ export function hexToRgba(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-export function getContrastColor(hex: string): string {
+export function getContrastColor(hex: string, isDark = false): string {
   let c = hex.replace('#', '');
   if (c.length === 3) {
     c = c.split('').map((x) => x + x).join('');
@@ -53,8 +53,10 @@ export function getContrastColor(hex: string): string {
   const r = parseInt(c.substring(0, 2), 16) || 0;
   const g = parseInt(c.substring(2, 4), 16) || 0;
   const b = parseInt(c.substring(4, 6), 16) || 0;
-  const darken = (val: number) => Math.max(0, Math.floor(val * 0.55));
-  return `#${darken(r).toString(16).padStart(2, '0')}${darken(g).toString(16).padStart(2, '0')}${darken(b).toString(16).padStart(2, '0')}`;
+  // claro: escurece a cor; escuro: clareia (texto escuro some sobre fundo escuro)
+  const adjust = (val: number) =>
+    isDark ? Math.min(255, Math.floor(val + (255 - val) * 0.55)) : Math.max(0, Math.floor(val * 0.55));
+  return `#${adjust(r).toString(16).padStart(2, '0')}${adjust(g).toString(16).padStart(2, '0')}${adjust(b).toString(16).padStart(2, '0')}`;
 }
 
 export interface CategoryColorResult {
@@ -69,7 +71,8 @@ export interface CategoryColorResult {
  */
 export function getCategoryColor(
   categoryOrColorOrId?: { id?: string; color?: string | null } | string | null,
-  fallbackId?: string
+  fallbackId?: string,
+  isDark = false
 ): CategoryColorResult {
   let color: string | null | undefined = null;
   let id = fallbackId ?? '';
@@ -89,13 +92,14 @@ export function getCategoryColor(
     const hex = color.trim().startsWith('#') ? color.trim() : `#${color.trim()}`;
     return {
       dot: hex,
-      bg: hexToRgba(hex, 0.15),
-      text: getContrastColor(hex),
+      bg: hexToRgba(hex, isDark ? 0.2 : 0.15),
+      text: getContrastColor(hex, isDark),
     };
   }
 
   const index = hashString(id) % LEGACY_PALETTE.length;
-  return LEGACY_PALETTE[index];
+  const legacy = LEGACY_PALETTE[index];
+  return isDark ? { dot: legacy.dot, bg: hexToRgba(legacy.dot, 0.2), text: legacy.dot } : legacy;
 }
 
 /**

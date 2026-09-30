@@ -4,7 +4,7 @@ import { HelperText, Text, TextInput } from 'react-native-paper';
 import ColorPicker from './ColorPicker';
 import { AppDialog, Button } from './ui';
 import { DEFAULT_CATEGORY_COLORS, suggestNextCategoryColor } from '../constants/categoryColors';
-import { customColors } from '../constants/theme';
+import { makeStyles } from '../context/ThemeContext';
 import { Category } from '../types/category';
 
 export interface CategoryFormValues {
@@ -30,6 +30,7 @@ export default function CategoryFormDialog({
   submitting: boolean;
   errorMessage?: string | null;
 }) {
+  const styles = useStyles();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [color, setColor] = useState(DEFAULT_CATEGORY_COLORS[4]);
@@ -105,7 +106,8 @@ export default function CategoryFormDialog({
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   // um pouco mais largo que o padrão para caber o ColorPicker
   dialog: { maxWidth: 460, width: '92%' },
   dialogContent: {
@@ -124,7 +126,7 @@ const styles = StyleSheet.create({
   colorLabel: {
     fontSize: 13,
     fontWeight: '500',
-    color: customColors.textSecondary,
+    color: c.textSecondary,
   },
   colorPreviewRow: {
     flexDirection: 'row',
@@ -136,12 +138,12 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 9,
     borderWidth: 1,
-    borderColor: customColors.border,
+    borderColor: c.border,
   },
   colorHexText: {
     fontSize: 12,
     fontFamily: 'monospace',
     fontWeight: '600',
-    color: customColors.textSecondary,
+    color: c.textSecondary,
   },
-});
+}));

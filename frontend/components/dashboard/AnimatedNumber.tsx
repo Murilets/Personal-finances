@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Easing, StyleSheet, TextStyle } from 'react-native';
-import { customColors } from '../../constants/theme';
+import { makeStyles } from '../../context/ThemeContext';
 import { formatBRL } from '../../utils/formatters';
 
 interface AnimatedNumberProps {
@@ -20,6 +20,7 @@ export default function AnimatedNumber({
   style,
   numberOfLines = 1,
 }: AnimatedNumberProps) {
+  const styles = useStyles();
   const anim = useRef(new Animated.Value(0)).current;
   const isNumeric = typeof value === 'number';
   const [displayValue, setDisplayValue] = useState<string>(() => {
@@ -105,10 +106,11 @@ export default function AnimatedNumber({
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   text: {
     fontSize: 22,
     fontWeight: '600',
-    color: customColors.text,
+    color: c.text,
   },
-});
+}));

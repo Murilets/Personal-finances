@@ -2,7 +2,7 @@ import { Pencil, Trash2 } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { DataTable, Text } from 'react-native-paper';
 import { getCategoryColor } from '../constants/categoryColors';
-import { customColors } from '../constants/theme';
+import { makeStyles, useAppTheme } from '../context/ThemeContext';
 import { Expense } from '../types/expense';
 
 export type SortKey = 'date' | 'category' | 'amount';
@@ -32,6 +32,8 @@ export default function ExpenseTable({
   onEdit: (expense: Expense) => void;
   onDelete: (expense: Expense) => void;
 }) {
+  const styles = useStyles();
+  const { colors, isDark } = useAppTheme();
   const arrow = (key: SortKey) => (sortKey === key ? (sortDir === 1 ? ' ▲' : ' ▼') : '');
 
   return (
@@ -51,7 +53,7 @@ export default function ExpenseTable({
       </DataTable.Header>
 
       {expenses.map((expense) => {
-        const color = getCategoryColor(expense.category ?? expense.categoryId);
+        const color = getCategoryColor(expense.category ?? expense.categoryId, undefined, isDark);
         return (
           <DataTable.Row key={expense.id}>
             <DataTable.Cell style={styles.dateCol}>{formatDate(expense.date)}</DataTable.Cell>
@@ -69,10 +71,10 @@ export default function ExpenseTable({
             <DataTable.Cell style={styles.actionsCol}>
               <View style={styles.actions}>
                 <Pressable onPress={() => onEdit(expense)} hitSlop={8}>
-                  <Pencil size={16} color={customColors.textSecondary} />
+                  <Pencil size={16} color={colors.textSecondary} />
                 </Pressable>
                 <Pressable onPress={() => onDelete(expense)} hitSlop={8}>
-                  <Trash2 size={16} color={customColors.expense} />
+                  <Trash2 size={16} color={colors.expense} />
                 </Pressable>
               </View>
             </DataTable.Cell>
@@ -83,11 +85,12 @@ export default function ExpenseTable({
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   card: {
-    backgroundColor: customColors.surface,
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: customColors.border,
+    borderColor: c.border,
     borderRadius: 12,
   },
   dateCol: { flex: 1.2 },
@@ -105,6 +108,6 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   badgeText: { fontSize: 12, fontWeight: '500', textAlign: 'center' },
-  amount: { color: customColors.expense, fontWeight: '500' },
+  amount: { color: c.expense, fontWeight: '500' },
   actions: { flexDirection: 'row', gap: 14, justifyContent: 'flex-end', alignItems: 'center' },
-});
+}));
