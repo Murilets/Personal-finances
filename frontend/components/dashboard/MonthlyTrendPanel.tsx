@@ -2,7 +2,7 @@ import { memo, useMemo, useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import Svg, { Circle, Path, Polygon, Polyline } from 'react-native-svg';
-import { customColors } from '../../constants/theme';
+import { makeStyles, useAppTheme } from '../../context/ThemeContext';
 import { MonthlyTotal } from '../../types/dashboard';
 import { formatMonthName, formatMonthShort } from '../../utils/formatters';
 
@@ -34,6 +34,8 @@ function buildPoints(trend: MonthlyTotal[], width: number) {
 }
 
 function MonthlyTrendPanel({ trend }: { trend: MonthlyTotal[] }) {
+  const styles = useStyles();
+  const { colors } = useAppTheme();
   const [width, setWidth] = useState(DEFAULT_WIDTH);
 
   // hooks antes do early return (regras de hooks)
@@ -55,10 +57,10 @@ function MonthlyTrendPanel({ trend }: { trend: MonthlyTotal[] }) {
   const isUp = change !== null && change > 0;
   // gastar mais é ruim (vermelho), gastar menos é bom (verde)
   const changeColor = change === null || change === 0
-    ? customColors.textSecondary
+    ? colors.textSecondary
     : isUp
-      ? customColors.expense
-      : customColors.positive;
+      ? colors.expense
+      : colors.positive;
 
   const handleLayout = (e: LayoutChangeEvent) => {
     const measured = Math.round(e.nativeEvent.layout.width);
@@ -96,11 +98,11 @@ function MonthlyTrendPanel({ trend }: { trend: MonthlyTotal[] }) {
 
       <View style={styles.chart} onLayout={handleLayout}>
         <Svg width={width} height={CHART_HEIGHT}>
-          <Polygon points={area} fill={customColors.primary} opacity={0.1} />
+          <Polygon points={area} fill={colors.primary} opacity={0.1} />
           <Polyline
             points={line}
             fill="none"
-            stroke={customColors.primary}
+            stroke={colors.primary}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -109,8 +111,8 @@ function MonthlyTrendPanel({ trend }: { trend: MonthlyTotal[] }) {
             cx={last.x}
             cy={last.y}
             r={4}
-            fill={customColors.primary}
-            stroke={customColors.surface}
+            fill={colors.primary}
+            stroke={colors.surface}
             strokeWidth={2}
           />
         </Svg>
@@ -132,12 +134,13 @@ function MonthlyTrendPanel({ trend }: { trend: MonthlyTotal[] }) {
 
 export default memo(MonthlyTrendPanel);
 
-const styles = StyleSheet.create({
-  title: { fontSize: 12, fontWeight: '600', color: customColors.textSecondary },
+
+const useStyles = makeStyles((c) => ({
+  title: { fontSize: 12, fontWeight: '600', color: c.textSecondary },
   changeRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 },
   arrowDown: { transform: [{ rotate: '180deg' }] },
   changeValue: { fontSize: 20, fontWeight: '700' },
-  muted: { fontSize: 13, color: customColors.textSecondary },
+  muted: { fontSize: 13, color: c.textSecondary },
   // texto mais longo: quebra de linha dentro do painel em vez de estourar a largura
   comparison: { flexShrink: 1 },
   chart: { marginTop: 14, maxWidth: DEFAULT_WIDTH },
@@ -147,6 +150,6 @@ const styles = StyleSheet.create({
     maxWidth: DEFAULT_WIDTH,
     marginTop: 6,
   },
-  label: { fontSize: 10, color: customColors.textSecondary },
-  labelCurrent: { fontWeight: '700', color: customColors.text },
-});
+  label: { fontSize: 10, color: c.textSecondary },
+  labelCurrent: { fontWeight: '700', color: c.text },
+}));

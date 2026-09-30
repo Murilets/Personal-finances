@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
-import { customColors } from '../../constants/theme';
+import { makeStyles } from '../../context/ThemeContext';
 import AnimatedNumber from './AnimatedNumber';
 
 function MetricCard({
@@ -21,6 +21,7 @@ function MetricCard({
   dotColor?: string;
   caption?: string;
 }) {
+  const styles = useStyles();
   const displayVal = numericValue !== undefined ? numericValue : (value ?? '');
 
   return (
@@ -42,11 +43,12 @@ function MetricCard({
 
 export default memo(MetricCard);
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   card: {
-    backgroundColor: customColors.surface,
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: customColors.border,
+    borderColor: c.border,
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 20,
@@ -55,9 +57,9 @@ const styles = StyleSheet.create({
     flexBasis: 180,
     minWidth: 180,
   },
-  label: { fontSize: 13, fontWeight: '500', color: customColors.textSecondary },
+  label: { fontSize: 13, fontWeight: '500', color: c.textSecondary },
   valueRow: { flexDirection: 'row', alignItems: 'center', gap: 8, overflow: 'hidden' },
   dot: { width: 10, height: 10, borderRadius: 5 },
-  value: { fontSize: 22, fontWeight: '600', color: customColors.text, flexShrink: 1 },
-  caption: { fontSize: 13, color: customColors.textSecondary },
-});
+  value: { fontSize: 22, fontWeight: '600', color: c.text, flexShrink: 1 },
+  caption: { fontSize: 13, color: c.textSecondary },
+}));

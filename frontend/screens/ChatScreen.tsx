@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
-import { customColors } from '../constants/theme';
+import { makeStyles } from '../context/ThemeContext';
 
 // Placeholder visual mockado — integração real de chat com IA é fase futura do roadmap.
 const MOCK_MESSAGES = [
@@ -10,6 +10,7 @@ const MOCK_MESSAGES = [
 ] as const;
 
 export default function ChatScreen() {
+  const styles = useStyles();
   return (
     <View style={styles.container}>
       <Text variant="headlineSmall">Chat</Text>
@@ -35,22 +36,23 @@ export default function ChatScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   container: { flex: 1, padding: 36 },
-  subtitle: { color: customColors.textSecondary, marginTop: 4, marginBottom: 24 },
+  subtitle: { color: c.textSecondary, marginTop: 4, marginBottom: 24 },
   messages: { flex: 1, maxWidth: 640 },
   messagesContent: { gap: 12, paddingBottom: 16 },
   bubble: { maxWidth: '70%', paddingVertical: 10, paddingHorizontal: 14, borderRadius: 14 },
   bubbleAgent: {
-    backgroundColor: customColors.surface,
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: customColors.border,
+    borderColor: c.border,
     alignSelf: 'flex-start',
   },
   bubbleUser: {
-    backgroundColor: customColors.primary,
+    backgroundColor: c.primary,
     alignSelf: 'flex-end',
   },
-  bubbleTextAgent: { color: customColors.text },
-  bubbleTextUser: { color: customColors.onPrimary },
-});
+  bubbleTextAgent: { color: c.text },
+  bubbleTextUser: { color: c.onPrimary },
+}));

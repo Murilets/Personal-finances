@@ -2,7 +2,7 @@ import { Pencil, Trash2 } from 'lucide-react-native';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { getCategoryColor } from '../constants/categoryColors';
-import { customColors } from '../constants/theme';
+import { makeStyles, useAppTheme } from '../context/ThemeContext';
 import { Expense } from '../types/expense';
 
 function formatDate(iso: string) {
@@ -22,7 +22,9 @@ export default function ExpenseListItem({
   onEdit: () => void;
   onDelete: () => void;
 }) {
-  const color = getCategoryColor(expense.category ?? expense.categoryId);
+  const styles = useStyles();
+  const { colors, isDark } = useAppTheme();
+  const color = getCategoryColor(expense.category ?? expense.categoryId, undefined, isDark);
 
   return (
     <View style={styles.card}>
@@ -37,10 +39,10 @@ export default function ExpenseListItem({
         <Text style={styles.date}>{formatDate(expense.date)}</Text>
         <View style={styles.actions}>
           <Pressable onPress={onEdit} hitSlop={8}>
-            <Pencil size={16} color={customColors.textSecondary} />
+            <Pencil size={16} color={colors.textSecondary} />
           </Pressable>
           <Pressable onPress={onDelete} hitSlop={8}>
-            <Trash2 size={16} color={customColors.expense} />
+            <Trash2 size={16} color={colors.expense} />
           </Pressable>
         </View>
       </View>
@@ -48,11 +50,12 @@ export default function ExpenseListItem({
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   card: {
-    backgroundColor: customColors.surface,
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: customColors.border,
+    borderColor: c.border,
     borderRadius: 12,
     padding: 14,
     gap: 6,
@@ -68,9 +71,9 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   badgeText: { fontSize: 12, fontWeight: '500', textAlign: 'center' },
-  amount: { color: customColors.expense, fontWeight: '500' },
-  note: { fontSize: 13, color: customColors.text },
+  amount: { color: c.expense, fontWeight: '500' },
+  note: { fontSize: 13, color: c.text },
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  date: { fontSize: 12, color: customColors.textSecondary },
+  date: { fontSize: 12, color: c.textSecondary },
   actions: { flexDirection: 'row', gap: 14, justifyContent: 'flex-end', marginLeft: 'auto' },
-});
+}));

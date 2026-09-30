@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import Svg, { Circle, G } from 'react-native-svg';
 import { getCategoryColor } from '../../constants/categoryColors';
-import { customColors } from '../../constants/theme';
+import { makeStyles, useAppTheme } from '../../context/ThemeContext';
 import { CategorySpending } from '../../types/dashboard';
 import AnimatedNumber from './AnimatedNumber';
 
@@ -44,6 +44,8 @@ function CategoryDonutChart({
   items: CategorySpending[];
   total: number;
 }) {
+  const styles = useStyles();
+  const { colors } = useAppTheme();
   const [progress, setProgress] = useState(0);
   // a animação re-renderiza a cada frame; os arcos só mudam com os dados
   const arcs = useMemo(() => buildArcs(items, total), [items, total]);
@@ -90,7 +92,7 @@ function CategoryDonutChart({
             cy={CENTER}
             r={RADIUS}
             fill="none"
-            stroke={customColors.track}
+            stroke={colors.track}
             strokeWidth={STROKE}
           />
           {arcs.map((arc) => {
@@ -126,7 +128,8 @@ function CategoryDonutChart({
 
 export default memo(CategoryDonutChart);
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   chart: { width: DONUT_SIZE, height: DONUT_SIZE },
   center: {
     ...StyleSheet.absoluteFillObject,
@@ -135,6 +138,6 @@ const styles = StyleSheet.create({
     gap: 2,
     overflow: 'hidden',
   },
-  centerLabel: { fontSize: 12, fontWeight: '500', color: customColors.textSecondary },
-  centerValue: { fontSize: 19, fontWeight: '700', color: customColors.text },
-});
+  centerLabel: { fontSize: 12, fontWeight: '500', color: c.textSecondary },
+  centerValue: { fontSize: 19, fontWeight: '700', color: c.text },
+}));
