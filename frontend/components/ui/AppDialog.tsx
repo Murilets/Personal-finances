@@ -1,7 +1,7 @@
 import { ReactElement, ReactNode } from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { Dialog, Portal } from 'react-native-paper';
-import { customColors } from '../../constants/theme';
+import { makeStyles } from '../../context/ThemeContext';
 
 export interface AppDialogProps {
   visible: boolean;
@@ -25,6 +25,7 @@ export default function AppDialog({
   contentStyle,
   style,
 }: AppDialogProps) {
+  const styles = useStyles();
   return (
     <Portal>
       <Dialog visible={visible} onDismiss={onDismiss} style={[styles.dialog, style]}>
@@ -36,16 +37,17 @@ export default function AppDialog({
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   dialog: {
-    backgroundColor: customColors.surface,
+    backgroundColor: c.surface,
     borderWidth: 1,
-    borderColor: customColors.border,
+    borderColor: c.border,
     borderRadius: 12,
     maxWidth: 440,
     width: '90%',
     alignSelf: 'center',
   },
-  title: { color: customColors.text },
+  title: { color: c.text },
   actions: { gap: 4 },
-});
+}));

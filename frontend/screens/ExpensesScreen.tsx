@@ -10,7 +10,7 @@ import ExpenseTable, { SortDir, SortKey } from '../components/ExpenseTable';
 import LoadingState from '../components/LoadingState';
 import Pagination from '../components/Pagination';
 import { Button, ConfirmDialog } from '../components/ui';
-import { customColors } from '../constants/theme';
+import { makeStyles } from '../context/ThemeContext';
 import { useSnackbar } from '../context/SnackbarContext';
 import { useCategories } from '../hooks/useCategories';
 import { useExpenses } from '../hooks/useExpenses';
@@ -20,6 +20,7 @@ import { Expense, ExpenseFilters as ExpenseFiltersValue } from '../types/expense
 const WIDE_BREAKPOINT = 768;
 
 export default function ExpensesScreen() {
+  const styles = useStyles();
   const { width } = useWindowDimensions();
   const isWide = width >= WIDE_BREAKPOINT;
 
@@ -221,9 +222,10 @@ export default function ExpensesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   container: { padding: 36 },
-  subtitle: { color: customColors.textSecondary, marginTop: 4, marginBottom: 20 },
+  subtitle: { color: c.textSecondary, marginTop: 4, marginBottom: 20 },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -233,4 +235,4 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   list: { gap: 10 },
-});
+}));

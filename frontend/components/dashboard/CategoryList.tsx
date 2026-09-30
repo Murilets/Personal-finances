@@ -2,7 +2,7 @@ import { memo, useEffect, useRef } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 import { Text } from 'react-native-paper';
 import { getCategoryColor } from '../../constants/categoryColors';
-import { customColors } from '../../constants/theme';
+import { makeStyles } from '../../context/ThemeContext';
 import { CategorySpending } from '../../types/dashboard';
 import { formatBRL } from '../../utils/formatters';
 
@@ -15,6 +15,7 @@ const CategoryRow = memo(function CategoryRow({
   index: number;
   isLast: boolean;
 }) {
+  const styles = useStyles();
   const anim = useRef(new Animated.Value(0)).current;
   const color = getCategoryColor(item.color ?? item.categoryId);
 
@@ -73,18 +74,19 @@ function CategoryList({ items }: { items: CategorySpending[] }) {
 
 export default memo(CategoryList);
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 9 },
-  rowDivider: { borderBottomWidth: 1, borderBottomColor: customColors.border },
+  rowDivider: { borderBottomWidth: 1, borderBottomColor: c.border },
   label: { width: 110, flexDirection: 'row', alignItems: 'center', gap: 10 },
   dot: { width: 9, height: 9, borderRadius: 5 },
-  name: { flex: 1, fontSize: 14, color: customColors.text },
+  name: { flex: 1, fontSize: 14, color: c.text },
   track: {
     flex: 1,
     height: 4,
     borderRadius: 2,
     marginHorizontal: 16,
-    backgroundColor: customColors.track,
+    backgroundColor: c.track,
     overflow: 'hidden',
   },
   fill: { height: '100%', borderRadius: 2 },
@@ -93,12 +95,12 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     fontSize: 14,
     fontWeight: '600',
-    color: customColors.text,
+    color: c.text,
   },
   percent: {
     width: 40,
     textAlign: 'right',
     fontSize: 13,
-    color: customColors.textSecondary,
+    color: c.textSecondary,
   },
-});
+}));

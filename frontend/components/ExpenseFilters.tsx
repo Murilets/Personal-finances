@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import CategorySelect from './CategorySelect';
 import DateInput from './DateInput';
 import { Button } from './ui';
-import { customColors } from '../constants/theme';
+import { makeStyles, useAppTheme } from '../context/ThemeContext';
 import { SearchIcon, XIcon } from '../constants/icons';
 import { useDateInput } from '../hooks/useDateInput';
 import { Category } from '../types/category';
@@ -18,6 +18,8 @@ export default function ExpenseFilters({
   filters: ExpenseFiltersValue;
   onChange: (filters: ExpenseFiltersValue) => void;
 }) {
+  const styles = useStyles();
+  const { colors } = useAppTheme();
   const startDateInput = useDateInput(filters.startDate);
   const endDateInput = useDateInput(filters.endDate);
   const [draftCategoryId, setDraftCategoryId] = useState<string | undefined>(filters.categoryId);
@@ -58,7 +60,7 @@ export default function ExpenseFilters({
     onChange({});
   };
 
-  const clearColor = hasActiveFilters ? customColors.expense : customColors.textDisabled;
+  const clearColor = hasActiveFilters ? colors.expense : colors.textDisabled;
 
   return (
     <View style={styles.cardContainer}>
@@ -87,7 +89,7 @@ export default function ExpenseFilters({
       </View>
       <Button
         onPress={handleSearch}
-        icon={() => <SearchIcon size={16} color={customColors.onPrimary} />}
+        icon={() => <SearchIcon size={16} color={colors.onPrimary} />}
         style={styles.actionButton}
       >
         Buscar
@@ -105,12 +107,13 @@ export default function ExpenseFilters({
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   cardContainer: {
-    backgroundColor: customColors.surface,
+    backgroundColor: c.surface,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: customColors.border,
+    borderColor: c.border,
     paddingHorizontal: 12,
     paddingVertical: 10,
     alignSelf: 'flex-start',
@@ -133,4 +136,4 @@ const styles = StyleSheet.create({
   disabledClearButton: {
     opacity: 0.5,
   },
-});
+}));

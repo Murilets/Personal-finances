@@ -6,12 +6,13 @@ import MetricCard from '../components/dashboard/MetricCard';
 import ErrorState from '../components/ErrorState';
 import LoadingState from '../components/LoadingState';
 import { getCategoryColor } from '../constants/categoryColors';
-import { customColors } from '../constants/theme';
+import { makeStyles } from '../context/ThemeContext';
 import { useDashboardMonths, useDashboardSummary } from '../hooks/useDashboard';
 import { MonthOption } from '../types/dashboard';
 import { formatBRL, formatMonthLabel, getCurrentPeriod } from '../utils/formatters';
 
 export default function DashboardScreen() {
+  const styles = useStyles();
   // sem filtro = mês atual do ano atual
   const [period, setPeriod] = useState<MonthOption>(getCurrentPeriod);
 
@@ -72,8 +73,9 @@ export default function DashboardScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   container: { padding: 36, gap: 24 },
-  subtitle: { color: customColors.textSecondary, marginTop: 4 },
+  subtitle: { color: c.textSecondary, marginTop: 4 },
   metrics: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
-});
+}));

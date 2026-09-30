@@ -2,7 +2,7 @@ import { ChevronDown } from 'lucide-react-native';
 import { useState } from 'react';
 import { LayoutChangeEvent, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { Menu, Text } from 'react-native-paper';
-import { customColors } from '../../constants/theme';
+import { makeStyles, useAppTheme } from '../../context/ThemeContext';
 
 export interface DropdownOption<T extends string | number> {
   value: T;
@@ -32,6 +32,8 @@ export default function Dropdown<T extends string | number>({
   dense = false,
   style,
 }: DropdownProps<T>) {
+  const styles = useStyles();
+  const { colors } = useAppTheme();
   const [open, setOpen] = useState(false);
   const [width, setWidth] = useState(0);
   const selected = options.find((o) => o.value === value);
@@ -72,7 +74,7 @@ export default function Dropdown<T extends string | number>({
             >
               {selected?.label ?? placeholder}
             </Text>
-            <ChevronDown size={16} color={customColors.textSecondary} />
+            <ChevronDown size={16} color={colors.textSecondary} />
           </Pressable>
         }
       >
@@ -95,9 +97,10 @@ export default function Dropdown<T extends string | number>({
   );
 }
 
-const styles = StyleSheet.create({
+
+const useStyles = makeStyles((c) => ({
   container: { gap: 4 },
-  label: { fontSize: 12, color: customColors.textSecondary, marginLeft: 4 },
+  label: { fontSize: 12, color: c.textSecondary, marginLeft: 4 },
   field: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -106,27 +109,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: customColors.border,
-    backgroundColor: customColors.surface,
+    borderColor: c.border,
+    backgroundColor: c.surface,
   },
-  fieldError: { borderColor: customColors.expense },
-  fieldText: { flexShrink: 1, fontSize: 13, color: customColors.text },
-  placeholder: { color: customColors.textSecondary },
+  fieldError: { borderColor: c.expense },
+  fieldText: { flexShrink: 1, fontSize: 13, color: c.text },
+  placeholder: { color: c.textSecondary },
   list: {
     marginTop: 4,
     paddingVertical: 4,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: customColors.border,
-    backgroundColor: customColors.surface,
-    shadowColor: customColors.shadow,
+    borderColor: c.border,
+    backgroundColor: c.surface,
+    shadowColor: c.shadow,
     shadowOpacity: 0.08,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
   },
   item: { height: 34, paddingHorizontal: 14 },
-  itemSelected: { backgroundColor: customColors.primarySoft },
+  itemSelected: { backgroundColor: c.primarySoft },
   itemContent: { minWidth: 0, maxWidth: undefined, marginLeft: 0 },
-  itemText: { fontSize: 13, color: customColors.text },
-  itemTextSelected: { color: customColors.primary, fontWeight: '600' },
-});
+  itemText: { fontSize: 13, color: c.text },
+  itemTextSelected: { color: c.primary, fontWeight: '600' },
+}));
